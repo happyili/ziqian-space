@@ -1,21 +1,141 @@
-# React + TypeScript + Vite
+# 坦克数学大战 🎮🔢
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+一个有趣的数学练习游戏，通过坦克战斗的方式让数学学习变得更加生动有趣！
 
-While this project uses React, Vite supports many popular JS frameworks. [See all the supported frameworks](https://vitejs.dev/guide/#scaffolding-your-first-vite-project).
+## 🎯 游戏特色
 
-## Deploy Your Own
+- **多种运算类型**: 支持加法、减法、乘法、除法
+- **难度分级**: 从简单的个位数运算到复杂的多位数运算
+- **视觉效果丰富**: 包含爆炸、烟火、特效等动画
+- **奥特曼模式**: 第6关后的特殊模式
+- **移动端适配**: 完美支持手机和平板设备
+- **实时统计**: 答题时间、正确率、连击数等数据统计
 
-Deploy your own Vite project with Vercel.
+## 🚀 在线体验
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/vercel/examples/tree/main/framework-boilerplates/vite-react&template=vite-react)
+### 部署到 Vercel
 
-_Live Example: https://vite-react-example.vercel.app_
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/yourusername/tank-math-battle)
 
-### Deploying From Your Terminal
+### 本地运行
 
-You can deploy your new Vite project with a single command from your terminal using [Vercel CLI](https://vercel.com/download):
-
-```shell
-$ vercel
+1. 克隆项目
+```bash
+git clone https://github.com/happyili/ziqian-space
+cd ziqian-space
 ```
+
+2. 安装依赖（可选）
+```bash
+npm install
+```
+
+3. 启动本地服务器
+```bash
+npm run dev
+# 或者直接用浏览器打开 index.html
+```
+
+## 📁 项目结构
+
+```
+tank-math-battle/
+├── index.html          # 主页面
+├── style.css           # 样式文件
+├── game.js             # 主游戏逻辑
+├── animations.js       # 动画效果模块
+├── questionLogic.js    # 题目生成模块
+├── gameRules.js        # 游戏规则模块
+├── vercel.json         # Vercel 部署配置
+├── package.json        # 项目配置
+└── README.md           # 项目说明
+```
+
+## 🎮 游戏玩法
+
+1. **选择运算类型**: 在设置界面选择要练习的数学运算
+2. **选择难度**: 每种运算都有不同的难度选项
+3. **开始战斗**: 快速计算数学题目，用正确答案击败敌方坦克
+4. **键盘快捷键**: 使用数字键 1、2、3 快速选择答案
+5. **连击奖励**: 快速连续答对可获得额外得分
+6. **升级挑战**: 击败敌方坦克后面对更强的对手
+
+## 🛠️ 技术特性
+
+- **纯前端**: 使用原生 HTML5、CSS3、JavaScript 开发
+- **模块化架构**: 代码按功能分离，便于维护和扩展
+- **响应式设计**: 自适应不同屏幕尺寸
+- **无依赖**: 不需要任何外部框架或库
+- **PWA 就绪**: 支持离线使用
+
+## 🔧 部署说明
+
+### Vercel 部署
+
+1. Fork 这个项目到你的 GitHub
+2. 在 [Vercel](https://vercel.com) 上导入项目
+3. Vercel 会自动检测配置并部署
+4. 部署完成后即可访问
+
+### 其他平台部署
+
+由于这是一个纯静态网站，你可以部署到任何静态网站托管平台：
+
+- **Netlify**: 拖拽文件夹即可部署
+- **GitHub Pages**: 启用 Pages 功能即可
+- **Cloudflare Pages**: 连接 GitHub 仓库自动部署
+
+## 🎯 游戏模式详解
+
+### 加法模式
+- **简单**: 个位数加法 (1-9)
+- **进位**: 一定有进位的两位数加法
+- **没进位**: 一定没有进位的两位数加法
+- **随机**: 混合各种加法题型
+
+### 减法模式
+- **简单**: 20以内的减法
+- **借位**: 一定有借位的两位数减法
+- **没借位**: 一定没有借位的两位数减法
+- **随机**: 混合各种减法题型
+
+### 乘法模式
+- **简单**: 个位数乘法 (2-9)
+- **中等**: 两位数×个位数
+- **困难**: 两位数×两位数
+- **随机**: 混合各种乘法题型
+
+### 除法模式
+- **简单**: 两位数÷个位数 (整除)
+- **中等**: 三位数÷个位数 (整除)
+- **困难**: 三位数÷两位数 (整除)
+
+## 🏆 特殊功能
+
+- **奥特曼模式**: 第6关开始的特殊视觉效果
+- **连击系统**: 快速答题可获得连击奖励
+- **统计分析**: 详细的答题数据统计
+- **暂停功能**: 随时暂停和继续游戏
+
+## 📱 移动端支持
+
+- 触摸优化的按钮设计
+- 防止意外缩放和滚动
+- 横屏模式提醒
+- 响应式布局适配
+
+## 🤝 贡献
+
+欢迎提交 Issue 和 Pull Request！
+
+## 📄 许可证
+
+MIT License - 详见 [LICENSE](LICENSE) 文件
+
+## 🙏 致谢
+
+感谢所有为这个项目贡献代码和想法的开发者们！
+
+---
+
+**享受数学学习的乐趣吧！** 🎯✨

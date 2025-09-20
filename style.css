@@ -1,0 +1,1488 @@
+:root {
+    /* 坦克相关常量 */
+    --tank-width: 60px;
+    --tank-height: 40px;
+    --tank-total-height: 60px;
+    --tank-bottom: 150px;
+    --barrel-width: 40px;
+    --barrel-height: 8px;
+    --barrel-top-offset: 16px;
+    --barrel-extend: 20px;
+    --bullet-size: 10px;
+    --explosion-size: 60px;
+    --big-explosion-size: 120px;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #000;
+    font-family: 'Courier New', monospace;
+    overflow: hidden;
+    color: #fff;
+}
+
+#gameContainer {
+    width: 100vw;
+    height: 100vh;
+    position: relative;
+    background-color: #16676a;  
+}
+
+/* 设置界面 */
+#setupScreen {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #333;
+    border: 3px solid #0f0;
+    padding: 30px;
+    text-align: left;
+    box-shadow: 0 0 20px #0f0;
+    max-height: 80vh;
+    overflow-y: auto;
+    min-width: 500px;
+}
+
+#setupScreen h1 {
+    color: #0f0;
+    margin-bottom: 20px;
+    text-shadow: 2px 2px 4px #000;
+}
+
+.setup-option {
+    margin: 5px 0;
+    color: #fff;
+}
+
+.setup-option label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #0f0;
+}
+
+.option-group {
+    margin: 10px 0;
+    padding: 10px 15px;
+    border: 1px solid #555;
+    border-radius: 5px;
+    background-color: #444;
+}
+
+.option-group h3 {
+    margin: 0 0 10px 0;
+    color: #0f0;
+    font-size: 18px;
+}
+
+.sub-options {
+    margin-left: 20px;
+    margin-top: 10px;
+}
+
+.sub-options label {
+    font-weight: normal;
+    color: #fff;
+    margin-right: 10px;
+    display: inline;
+}
+
+.radio-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-top: 5px;
+}
+
+.radio-item {
+    display: flex;
+    align-items: center;
+    margin-right: 15px;
+}
+
+.radio-item input[type="radio"] {
+    margin-right: 5px;
+}
+
+.disabled-group {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+.setup-option input[type="checkbox"]:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+#startBtn {
+    background-color: #0f0;
+    color: #000;
+    border: none;
+    padding: 15px 30px;
+    font-size: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 20px;
+    box-shadow: 0 0 10px #0f0;
+    font-family: 'Courier New', monospace;
+}
+
+#startBtn:hover {
+    background-color: #0a0;
+    transform: scale(1.05);
+}
+
+/* 游戏界面 */
+#gameScreen {
+    display: none;
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+
+/* 战场区域 */
+#battleField {
+    position: relative;
+    width: 100%;
+    height: 60%;
+    background-color: #222;
+    border-bottom: 2px solid #666;
+}
+
+/* 坦克 */
+.tank {
+    position: absolute;
+    width: var(--tank-width);
+    height: var(--tank-total-height);
+}
+
+#playerTank {
+    bottom: var(--tank-bottom);
+    left: 100px;
+}
+
+#enemyTank {
+    bottom: var(--tank-bottom);
+    right: 100px;
+    transition: all 0.3s ease;
+    transform-origin: bottom center;
+}
+
+.tank-body {
+    width: var(--tank-width);
+    height: var(--tank-height);
+    background-color: #0a0;
+    position: relative;
+    border: 2px solid #060;
+}
+
+.tank-barrel {
+    width: var(--barrel-width);
+    height: var(--barrel-height);
+    background-color: #080;
+    position: absolute;
+    top: var(--barrel-top-offset);
+    right: calc(-1 * var(--barrel-extend));
+}
+
+#enemyTank .tank-body {
+    background-color: #a00;
+    border-color: #600;
+}
+
+#enemyTank .tank-barrel {
+    background-color: #800;
+    left: calc(-1 * var(--barrel-extend));
+    right: auto;
+}
+
+/* 血条样式 */
+.health-bar {
+    position: absolute;
+    width: 100%;
+    height: 10px;
+    top: -20px;
+    left: 0;
+    background-color: #333;
+    border: 2px solid #fff;
+    border-radius: 5px;
+}
+
+.health-bar-fill {
+    height: 100%;
+    background-color: #0f0;
+    border-radius: 3px;
+    transition: width 0.3s ease;
+}
+
+.health-bar-fill.medium {
+    background-color: #ff0;
+}
+
+.health-bar-fill.low {
+    background-color: #f00;
+}
+
+/* 坦克爆炸动画 */
+@keyframes tankExplode {
+    0% {
+        transform: scale(1) rotate(0deg);
+    }
+    25% {
+        transform: scale(1.2) rotate(10deg);
+    }
+    50% {
+        transform: scale(1.1) rotate(-10deg);
+    }
+    75% {
+        transform: scale(1.3) rotate(5deg);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(0) rotate(360deg);
+        opacity: 0;
+    }
+}
+
+.tank-exploding {
+    animation: tankExplode 1s ease-out forwards;
+}
+
+/* 大爆炸效果 */
+.big-explosion {
+    position: absolute;
+    width: var(--big-explosion-size);
+    height: var(--big-explosion-size);
+    background: radial-gradient(circle, #ff0, #f00, transparent);
+    border-radius: 50%;
+    animation: bigExplode 1s ease-out forwards;
+}
+
+@keyframes bigExplode {
+    0% {
+        transform: scale(0.5);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.5);
+    }
+    100% {
+        transform: scale(2);
+        opacity: 0;
+    }
+}
+
+/* 敌方坦克等级样式 */
+.enemy-level {
+    position: absolute;
+    top: -40px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: #f00;
+    font-size: 20px;
+    font-weight: bold;
+    text-shadow: 2px 2px 4px #000;
+}
+
+/* 奥特曼模式样式 */
+.ultraman-mode #playerTank .tank-body {
+    background: transparent;
+    border: none;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 40px;
+    line-height: 1;
+}
+
+.ultraman-mode #playerTank .tank-body::before {
+    content: "🔴";
+    position: absolute;
+    font-size: 40px;
+    z-index: 1;
+}
+
+.ultraman-mode #playerTank .tank-body::after {
+    content: "🦸‍♂️";
+    position: absolute;
+    font-size: 35px;
+    z-index: 2;
+    transform: translateX(2px);
+}
+
+.ultraman-mode #enemyTank .tank-body {
+    background: transparent;
+    border: none;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 40px;
+    line-height: 1;
+}
+
+.ultraman-mode #enemyTank .tank-body::before {
+    content: "👹";
+    position: absolute;
+    font-size: 40px;
+    z-index: 1;
+}
+
+/* 奥特曼模式下隐藏炮管 */
+.ultraman-mode .tank-barrel {
+    display: none;
+}
+
+/* 奥特曼模式特效 */
+.ultraman-mode #playerTank {
+    filter: drop-shadow(0 0 10px #00ff00);
+    animation: ultramanGlow 2s infinite alternate;
+}
+
+.ultraman-mode #enemyTank {
+    filter: drop-shadow(0 0 10px #ff0000);
+    animation: monsterGlow 2s infinite alternate;
+}
+
+@keyframes ultramanGlow {
+    0% {
+        filter: drop-shadow(0 0 5px #00ff00) hue-rotate(0deg);
+    }
+    100% {
+        filter: drop-shadow(0 0 15px #00ff00) hue-rotate(60deg);
+    }
+}
+
+@keyframes monsterGlow {
+    0% {
+        filter: drop-shadow(0 0 5px #ff0000) hue-rotate(0deg);
+    }
+    100% {
+        filter: drop-shadow(0 0 15px #ff0000) hue-rotate(30deg);
+    }
+}
+
+/* 奥特曼模式的炮弹样式 */
+.ultraman-mode .bullet {
+    background: radial-gradient(circle, #fff, #00ff00, #0000ff);
+    border-radius: 50%;
+    box-shadow: 0 0 20px #00ff00;
+    animation: ultramanBullet 0.5s infinite alternate;
+}
+
+.ultraman-mode .enemy-bullet {
+    background: radial-gradient(circle, #fff, #ff0000, #800080);
+    box-shadow: 0 0 20px #ff0000;
+    animation: monsterBullet 0.5s infinite alternate;
+}
+
+@keyframes ultramanBullet {
+    0% { transform: scale(1) rotate(0deg); }
+    100% { transform: scale(1.2) rotate(180deg); }
+}
+
+@keyframes monsterBullet {
+    0% { transform: scale(1) rotate(0deg); }
+    100% { transform: scale(1.2) rotate(-180deg); }
+}
+
+/* 奥特曼模式的爆炸效果 */
+.ultraman-mode .explosion {
+    background: radial-gradient(circle, #fff, #00ff00, #0000ff, transparent);
+    animation: ultramanExplosion 0.5s ease-out forwards;
+}
+
+@keyframes ultramanExplosion {
+    to {
+        transform: scale(3) rotate(360deg);
+        opacity: 0;
+    }
+}
+
+/* 炮弹 */
+.bullet {
+    position: absolute;
+    width: var(--bullet-size);
+    height: var(--bullet-size);
+    background-color: #ff0;
+    border-radius: 50%;
+    box-shadow: 0 0 10px #ff0;
+}
+
+/* 爆炸效果 */
+.explosion {
+    position: absolute;
+    width: var(--explosion-size);
+    height: var(--explosion-size);
+    background: radial-gradient(circle, #ff0, #f00, transparent);
+    border-radius: 50%;
+    animation: explode 0.5s ease-out forwards;
+}
+
+@keyframes explode {
+    to {
+        transform: scale(2);
+        opacity: 0;
+    }
+}
+
+/* 烟火效果 */
+.firework {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    background-color: #fff;
+    border-radius: 50%;
+}
+
+/* 题目区域 */
+#questionArea {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    background-color: #333;
+    padding: 20px 40px;
+    border: 2px solid #0f0;
+    box-shadow: 0 0 20px #0f0;
+    min-width: 400px;
+    position: relative;
+}
+
+#question {
+    font-size: 36px;
+    color: #0f0;
+    margin-bottom: 30px;
+    text-shadow: 2px 2px 4px #000;
+}
+
+/* 快捷键提示 */
+.keyboard-hint {
+    position: absolute;
+    bottom: 8px;
+    right: 15px;
+    font-size: 12px;
+    color: #888;
+    font-style: italic;
+    background-color: rgba(0, 0, 0, 0.3);
+    padding: 2px 6px;
+    border-radius: 3px;
+}
+
+/* 答案选项 */
+#answerOptions {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.answer-btn {
+    font-size: 28px;
+    padding: 15px 30px;
+    background-color: #444;
+    color: #0f0;
+    border: 2px solid #0f0;
+    cursor: pointer;
+    font-family: 'Courier New', monospace;
+    font-weight: bold;
+    transition: all 0.2s;
+    min-width: 120px;
+    position: relative;
+}
+
+.answer-btn .btn-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+}
+
+.answer-btn .key-hint {
+    position: absolute;
+    top: 5px;
+    left: 8px;
+    background-color: #0f0;
+    color: #000;
+    font-size: 14px;
+    font-weight: bold;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+}
+
+.answer-btn .answer-text {
+    font-size: 28px;
+}
+
+.answer-btn:hover {
+    background-color: #0f0;
+    color: #000;
+    transform: scale(1.1);
+    box-shadow: 0 0 15px #0f0;
+}
+
+.answer-btn:hover .key-hint {
+    background-color: #000;
+    color: #0f0;
+}
+
+.answer-btn:active {
+    transform: scale(0.95);
+}
+
+/* 禁用状态的答案按钮 */
+.answer-btn.disabled,
+.answer-btn:disabled {
+    background-color: #222;
+    color: #666;
+    border-color: #444;
+    cursor: not-allowed;
+    opacity: 0.5;
+    transform: none !important;
+    box-shadow: none;
+}
+
+.answer-btn.disabled .key-hint,
+.answer-btn:disabled .key-hint {
+    background-color: #444;
+    color: #888;
+}
+
+.answer-btn.disabled:hover,
+.answer-btn:disabled:hover {
+    background-color: #222;
+    color: #666;
+    transform: none;
+    box-shadow: none;
+}
+
+.answer-btn.disabled:hover .key-hint,
+.answer-btn:disabled:hover .key-hint {
+    background-color: #444;
+    color: #888;
+}
+
+/* 倒计时 */
+#timer {
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 48px;
+    color: #f00;
+    text-shadow: 2px 2px 4px #000;
+}
+
+
+
+/* 失误榜 */
+#mistakeCounter {
+    position: absolute;
+    top: 60px;
+    right: 20px;
+    font-size: 24px;
+    color: #fff;
+    background-color: #333;
+    padding: 10px 20px;
+    border: 2px solid #f00;
+}
+
+/* 得分显示 */
+#scoreCounter {
+    position: absolute;
+    top: 60px;
+    left: 140px;  /* 给暂停按钮留出空间 */
+    font-size: 24px;
+    color: #fff;
+    background-color: #333;
+    padding: 10px 20px;
+    border: 2px solid #0f0;
+}
+
+/* 连击计数器 */
+.combo-counter {
+    position: absolute;
+    right: 180px;
+    top: 60px;
+    font-size: 24px;
+    color: #0ff;
+    font-weight: bold;
+    text-shadow: 2px 2px 4px #000;
+    background-color: rgba(0, 0, 0, 0.7);
+    padding: 10px 20px;
+    border: 2px solid #0ff;
+    border-radius: 10px;
+    display: none;
+}
+
+.combo-counter.active {
+    display: block;
+    animation: comboPulse 0.5s ease-out;
+}
+
+@keyframes comboPulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.2);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* 统计信息 */
+#stats {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    font-size: 18px;
+    color: #0f0;
+}
+
+/* 答案反馈效果 */
+.correct-answer {
+    animation: correctPulse 0.5s ease-out;
+}
+
+.wrong-answer {
+    animation: wrongShake 0.5s ease-out;
+}
+
+@keyframes correctPulse {
+    0% { background-color: #0f0; }
+    100% { background-color: #444; }
+}
+
+@keyframes wrongShake {
+    0%, 100% { transform: translateX(0); background-color: #f00; }
+    20%, 60% { transform: translateX(-10px); }
+    40%, 80% { transform: translateX(10px); }
+}
+
+/* 按钮倒计时提示 */
+.button-countdown {
+    font-size: 18px;
+    color: #ff0;
+    text-align: center;
+    margin-top: 10px;
+    font-weight: bold;
+    text-shadow: 2px 2px 4px #000;
+    animation: countdownPulse 0.5s ease-in-out infinite alternate;
+}
+
+@keyframes countdownPulse {
+    0% { opacity: 0.7; transform: scale(1); }
+    100% { opacity: 1; transform: scale(1.05); }
+}
+
+/* 暂停按钮 */
+#pauseBtn {
+    position: absolute;
+    top: 60px;
+    left: 20px;
+    background-color: #0a0;
+    color: #fff;
+    border: 2px solid #0f0;
+    padding: 10px 20px;
+    font-size: 24px;
+    font-weight: bold;
+    cursor: pointer;
+    font-family: 'Courier New', monospace;
+    box-shadow: 0 0 10px #0f0;
+    z-index: 150;  /* 确保显示在其他元素之上 */
+}
+
+#pauseBtn:hover {
+    background-color: #080;
+    transform: scale(1.05);
+}
+
+#pauseBtn.paused {
+    background-color: #f00;
+    border-color: #f00;
+    box-shadow: 0 0 10px #f00;
+}
+
+/* 暂停遮罩 */
+#pauseOverlay {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 100;
+}
+
+#pauseOverlay .pause-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 72px;
+    color: #0f0;
+    text-shadow: 4px 4px 8px #000;
+    font-weight: bold;
+}
+
+/* 大呆豆闪现 */
+.bigDummy {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 72px;
+    color: #f00;
+    font-weight: bold;
+    text-shadow: 4px 4px 8px #000;
+    animation: flash 1s ease-out forwards;
+    pointer-events: none;
+}
+
+@keyframes flash {
+    0% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.5);
+    }
+    50% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1.2);
+    }
+    100% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(1);
+    }
+}
+
+/* 快速答题奖励提示 */
+.quick-bonus {
+    position: absolute;
+    left: 50%;
+    top: 30%;
+    transform: translateX(-50%);
+    font-size: 48px;
+    font-weight: bold;
+    text-shadow: 3px 3px 6px #000;
+    animation: quickBonus 1.5s ease-out forwards;
+    pointer-events: none;
+    z-index: 50;
+}
+
+.quick-bonus.streak-1 {
+    color: #0f0;
+}
+
+.quick-bonus.streak-2 {
+    color: rgb(253, 73, 73);
+    font-size: 56px;
+}
+
+.quick-bonus.streak-3 {
+    color: #ff0;
+    font-size: 66px;
+    animation: quickBonusSpecial 1.5s ease-out forwards;
+}
+
+@keyframes quickBonus {
+    0% {
+        opacity: 0;
+        transform: translateX(-50%) translateY(20px) scale(0.5);
+    }
+    40% {
+        opacity: 1;
+        transform: translateX(-50%) translateY(-10px) scale(1.2);
+    }
+    100% {
+        opacity: 0;
+        transform: translateX(-50%) translateY(-40px) scale(1);
+    }
+}
+
+@keyframes quickBonusSpecial {
+    0% {
+        opacity: 0;
+        transform: translateX(-50%) translateY(20px) scale(0.5) rotate(0deg);
+    }
+    40% {
+        opacity: 1;
+        transform: translateX(-50%) translateY(-10px) scale(1.3) rotate(5deg);
+    }
+    60% {
+        transform: translateX(-50%) translateY(-20px) scale(1.2) rotate(-5deg);
+    }
+    100% {
+        opacity: 0;
+        transform: translateX(-50%) translateY(-50px) scale(1) rotate(0deg);
+    }
+}
+
+/* GameOver画面 */
+#gameOverScreen {
+    display: none;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #333;
+    border: 3px solid #f00;
+    padding: 30px 50px;
+    text-align: center;
+    box-shadow: 0 0 30px #f00;
+    min-width: 400px;
+    z-index: 200;
+}
+
+/* 子弹打字效果 */
+@keyframes bulletType {
+    0% {
+        opacity: 0;
+        transform: translateX(-50px) scale(0.5);
+        color: #f00;
+        text-shadow: 0 0 10px #f00;
+    }
+    50% {
+        opacity: 1;
+        transform: translateX(0) scale(1.2);
+        color: #fff;
+        text-shadow: 0 0 20px #fff, 0 0 30px #f00;
+    }
+    100% {
+        opacity: 1;
+        transform: translateX(0) scale(1);
+        color: #f00;
+        text-shadow: 3px 3px 6px #000;
+    }
+}
+
+.bullet-char {
+    display: inline-block;
+    animation: bulletType 0.3s ease-out forwards;
+    margin: 0 2px;
+}
+
+/* 统计信息打字效果 */
+@keyframes statReveal {
+    0% {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.stat-item {
+    opacity: 0;
+    animation: statReveal 0.5s ease-out forwards;
+}
+
+.stat-item:nth-child(1) { animation-delay: 0.5s; }
+.stat-item:nth-child(2) { animation-delay: 0.7s; }
+.stat-item:nth-child(3) { animation-delay: 0.9s; }
+.stat-item:nth-child(4) { animation-delay: 1.1s; }
+
+/* 慢题列表打字效果 */
+.slow-questions {
+    opacity: 0;
+    animation: statReveal 0.5s ease-out forwards;
+    animation-delay: 1.3s;
+}
+
+.slow-question-item {
+    opacity: 0;
+    animation: statReveal 0.4s ease-out forwards;
+}
+
+.slow-question-item:nth-child(1) { animation-delay: 1.5s; }
+.slow-question-item:nth-child(2) { animation-delay: 1.7s; }
+.slow-question-item:nth-child(3) { animation-delay: 1.9s; }
+
+/* 答错题目列表打字效果 */
+.wrong-questions {
+    opacity: 0;
+    animation: statReveal 0.5s ease-out forwards;
+    animation-delay: 2.0s;
+}
+
+/* 重试按钮打字效果 */
+#retryBtn {
+    opacity: 0;
+    animation: statReveal 0.5s ease-out forwards;
+    animation-delay: 2.5s;
+}
+
+#gameOverScreen h2 {
+    color: #f00;
+    font-size: 48px;
+    margin-bottom: 30px;
+    text-shadow: 3px 3px 6px #000;
+}
+
+#gameOverScreen .stats-container {
+    margin: 20px 70px 0 50px;
+    text-align: left;
+}
+
+#gameOverScreen .stat-item {
+    font-size: 20px;
+    color: #fff;
+    margin: 10px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#gameOverScreen .stat-label {
+    color: #aaa;
+}
+
+#gameOverScreen .stat-value {
+    color: #0f0;
+    font-weight: bold;
+}
+
+#gameOverScreen .slow-questions {
+    margin-top: 20px;
+    border-top: 2px solid #666;
+}
+
+#gameOverScreen .slow-questions h3 {
+    color: #ff0;
+    font-size: 24px;
+    margin-bottom: 15px;
+}
+
+#gameOverScreen .slow-question-item {
+    font-size: 18px;
+    color: #fff;
+    margin: 8px 0;
+    padding-left: 20px;
+}
+
+#gameOverScreen .slow-question-time {
+    color: #f00;
+    font-weight: bold;
+}
+
+/* 答错题目样式 */
+#gameOverScreen .wrong-questions {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 2px solid #666;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+#gameOverScreen .wrong-questions h3 {
+    color: #f00;
+    font-size: 24px;
+    margin-bottom: 15px;
+}
+
+#gameOverScreen .wrong-question-item {
+    font-size: 18px;
+    color: #fff;
+    margin: 8px 0;
+    padding-left: 20px;
+    opacity: 0;
+    animation: statReveal 0.4s ease-out forwards;
+}
+
+#gameOverScreen .wrong-question-time {
+    color: #ff0;
+    font-weight: bold;
+}
+
+/* 答错题目的滚动条样式 */
+#gameOverScreen .wrong-questions::-webkit-scrollbar {
+    width: 8px;
+}
+
+#gameOverScreen .wrong-questions::-webkit-scrollbar-track {
+    background: #222;
+    border-radius: 4px;
+}
+
+#gameOverScreen .wrong-questions::-webkit-scrollbar-thumb {
+    background: #666;
+    border-radius: 4px;
+}
+
+#gameOverScreen .wrong-questions::-webkit-scrollbar-thumb:hover {
+    background: #888;
+}
+
+#retryBtn {
+    background-color: #0f0;
+    color: #000;
+    border: none;
+    padding: 15px 30px;
+    font-size: 24px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 30px;
+    box-shadow: 0 0 15px #0f0;
+    font-family: 'Courier New', monospace;
+}
+
+#retryBtn:hover {
+    background-color: #0a0;
+    transform: scale(1.05);
+}
+
+/* 玩家坦克血条特殊样式 */
+#playerTank .health-bar {
+    bottom: 60px;  /* 显示在坦克上方 */
+}
+
+/* 敌方坦克受伤动画 */
+.enemy-bullet {
+    background-color: #f00;
+    box-shadow: 0 0 10px #f00;
+}
+
+/* 倒计时进度条样式 */
+#timerContainer {
+    position: absolute;
+    top: 0px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    height: 50px;
+    background-color: #333;
+    overflow: hidden;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+}
+
+#timerProgress {
+    height: 100%;
+    background: linear-gradient(90deg, #0f0, #ff0, #f00);
+    width: 100%;
+    transition: width 1s linear;
+    position: relative;
+}
+
+#timerProgress::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+
+#timerText {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 32px;
+    color: #fff;
+    font-weight: bold;
+    text-shadow: 2px 2px 4px #000;
+    z-index: 10;
+}
+
+/* 全屏闪烁报警 */
+#timeoutWarning {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(255, 0, 0, 0.3);
+    z-index: 1000;
+    display: none;
+    pointer-events: none;
+}
+
+#timeoutWarning.active {
+    animation: warningFlash 0.5s ease-in-out infinite;
+}
+
+@keyframes warningFlash {
+    0%, 100% {
+        background-color: rgba(255, 0, 0, 0.1);
+    }
+    50% {
+        background-color: rgba(255, 0, 0, 0.5);
+    }
+}
+
+/* 最后3秒倒计时数字特效 */
+.final-countdown {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 120px;
+    color: #f00;
+    font-weight: bold;
+    text-shadow: 0 0 30px #f00;
+    z-index: 1001;
+    animation: countdownPulse 1s ease-out forwards;
+    pointer-events: none;
+}
+
+@keyframes countdownPulse {
+    0% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.5);
+    }
+    50% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1.2);
+    }
+    100% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(1);
+    }
+}
+
+/* 移动端适配 */
+@media screen and (max-width: 768px) {
+    /* 确保阻止缩放和滚动 */
+    body {
+        touch-action: manipulation;
+        user-select: none;
+        -webkit-user-select: none;
+        -webkit-touch-callout: none;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    /* 设置界面移动端适配 */
+    #setupScreen {
+        width: 95vw;
+        max-width: none;
+        min-width: auto;
+        padding: 15px;
+        font-size: 12px;
+    }
+
+    #setupScreen h1 {
+        font-size: 20px;
+        margin-bottom: 15px;
+    }
+
+    .option-group {
+        margin: 15px 0;
+        padding: 10px;
+    }
+
+    .radio-group {
+        /* flex-direction: column; */
+        gap: 8px;
+    }
+
+    .radio-item {
+        margin-right: 0;
+        margin-bottom: 5px;
+    }
+
+    .radio-item label {
+        font-size: 12px;
+    }
+
+    .setup-option small {
+        margin-left: 0 !important;
+        margin-top: 5px;
+        font-size: 10px;
+    }
+
+    #startBtn {
+        padding: 12px 24px;
+        font-size: 16px;
+    }
+
+    /* 游戏界面移动端适配 */
+    #gameScreen {
+        overflow: hidden;
+    }
+
+    /* 坦克位置调整 */
+    #playerTank {
+        left: 50px;
+    }
+
+    #enemyTank {
+        right: 50px;
+    }
+
+    /* 血条调整 */
+    .health-bar {
+        height: 8px;
+        top: -15px;
+    }
+
+    /* 敌方坦克等级显示调整 */
+    .enemy-level {
+        font-size: 14px;
+        top: -32px;
+    }
+
+    /* 顶部控制栏调整 */
+    #pauseBtn {
+        top: 50px;
+        left: 10px;
+        padding: 8px 12px;
+        font-size: 16px;
+    }
+
+    #scoreCounter {
+        top: 50px;
+        left: 100px;
+        font-size: 16px;
+        padding: 8px 15px;
+    }
+
+    #mistakeCounter {
+        top: 50px;
+        right: 10px;
+        font-size: 16px;
+        padding: 8px 15px;
+    }
+
+    /* 连击计数器调整 */
+    #comboCounter {
+        top: 50px;
+        right: 110px;
+        font-size: 20px;
+        padding: 5px 10px;
+    }
+
+    /* 倒计时进度条调整 */
+    #timerContainer {
+        height: 40px;
+    }
+
+    #timerText {
+        font-size: 20px;
+    }
+
+    /* 答案选项移动端适配 */
+    #answerOptions {
+        display: flex;
+        gap: 12px;
+        margin-top: 15px;
+    }
+
+    .answer-btn {
+        font-size: 20px;
+        padding: 15px 20px;
+        min-width: auto;
+        width: 100%;
+        margin: 0;
+        position: relative;
+        touch-action: manipulation;
+    }
+
+    .answer-btn .key-hint {
+        top: 8px;
+        left: 12px;
+        width: 24px;
+        height: 24px;
+        font-size: 12px;
+    }
+
+    .answer-btn .answer-text {
+        font-size: 20px;
+        margin-left: 30px;
+    }
+
+    /* 快捷键提示移动端调整 */
+    .keyboard-hint {
+        bottom: 5px;
+        right: 10px;
+        font-size: 10px;
+    }
+
+    /* 快速答题奖励提示调整 */
+    .quick-bonus {
+        font-size: 32px;
+        top: 25%;
+    }
+
+    .quick-bonus.streak-2 {
+        font-size: 40px;
+    }
+
+    .quick-bonus.streak-3 {
+        font-size: 48px;
+    }
+
+    /* 大呆豆闪现调整 */
+    .bigDummy {
+        font-size: 48px;
+    }
+
+    /* 最后倒计时数字调整 */
+    .final-countdown {
+        font-size: 80px;
+    }
+
+    /* GameOver界面移动端适配 */
+    #gameOverScreen {
+        width: 95vw;
+        max-width: 450px;
+        padding: 20px;
+        max-height: 80vh;
+        overflow-y: auto;
+    }
+
+    #gameOverScreen h2 {
+        font-size: 32px;
+        margin-bottom: 20px;
+    }
+
+    #gameOverScreen .stats-container {
+        margin: 15px 0;
+        text-align: left;
+    }
+
+    #gameOverScreen .stat-item {
+        font-size: 16px;
+        margin: 8px 0;
+    }
+
+    #gameOverScreen .slow-questions h3,
+    #gameOverScreen .wrong-questions h3 {
+        font-size: 18px;
+        margin-bottom: 10px;
+    }
+
+    #gameOverScreen .slow-question-item,
+    #gameOverScreen .wrong-question-item {
+        font-size: 14px;
+        margin: 6px 0;
+        padding-left: 15px;
+    }
+
+    #gameOverScreen .wrong-questions {
+        max-height: 200px;
+    }
+
+    #retryBtn {
+        padding: 12px 24px;
+        font-size: 18px;
+        margin-top: 20px;
+    }
+
+    /* 暂停界面调整 */
+    #pauseOverlay .pause-text {
+        font-size: 48px;
+    }
+
+    /* 炮弹大小调整 */
+    .bullet {
+        width: 6px;
+        height: 6px;
+    }
+
+    /* 爆炸效果调整 */
+    .explosion {
+        width: 30px;
+        height: 30px;
+    }
+
+    .big-explosion {
+        width: 60px;
+        height: 60px;
+    }
+}
+
+/* 更小屏幕设备（宽度小于480px）额外优化 */
+@media screen and (max-width: 480px) {
+    #setupScreen {
+        width: 95vw;
+        padding: 15px;
+    }
+
+    #setupScreen h1 {
+        font-size: 20px;
+    }
+
+    .setup-option label {
+        font-size: 12px;
+    }
+
+    #startBtn {
+        padding: 10px 20px;
+        font-size: 14px;
+    }
+
+    .answer-btn {
+        font-size: 16px;
+        padding: 12px 15px;
+    }
+
+    .answer-btn .answer-text {
+        font-size: 16px;
+    }
+
+
+    #timerContainer {
+        height: 35px;
+    }
+
+    #timerText {
+        font-size: 16px;
+    }
+
+    /* 进一步缩小坦克 */
+    :root {
+        --tank-width: 35px;
+        --tank-height: 24px;
+        --tank-total-height: 36px;
+        --barrel-width: 24px;
+        --barrel-height: 5px;
+        --barrel-top-offset: 10px;
+        --barrel-extend: 12px;
+    }
+
+    /* 移动端奥特曼模式适配 */
+    .ultraman-mode #playerTank .tank-body::before,
+    .ultraman-mode #playerTank .tank-body::after {
+        font-size: 28px;
+    }
+    
+    .ultraman-mode #enemyTank .tank-body::before {
+        font-size: 28px;
+    }
+}
+
+/* 横屏模式提醒 */
+@media screen and (orientation: landscape) and (max-height: 500px) {
+    body::before {
+        content: "建议竖屏游戏以获得最佳体验";
+        position: fixed;
+        top: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: rgba(255, 165, 0, 0.9);
+        color: #000;
+        padding: 5px 15px;
+        border-radius: 15px;
+        font-size: 12px;
+        z-index: 9999;
+        font-weight: bold;
+    }
+}

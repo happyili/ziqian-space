@@ -1,13 +1,235 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite + React + TS</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>坦克数学大战</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="gameContainer">
+        <!-- 设置界面 -->
+        <div id="setupScreen">
+            <h1 style="text-align: center;">坦克数学大战</h1>
+            
+            <!-- 加法选项 -->
+            <div class="option-group">
+                <div class="setup-option">
+                    <label>
+                        <input type="checkbox" id="enableAddition"> 启用加法
+                    </label>
+                </div>
+                <div class="sub-options" id="additionOptions">
+                    <div class="radio-group">
+                        <div class="radio-item">
+                            <input type="radio" id="addCarryRequired" name="additionMode" value="carry" checked>
+                            <label for="addCarryRequired">进位</label>
+                        </div>
+                        <div class="radio-item">
+                            <input type="radio" id="addNoCarry" name="additionMode" value="nocarry">
+                            <label for="addNoCarry">没进位</label>
+                        </div>
+                        <div class="radio-item">
+                            <input type="radio" id="addBoth" name="additionMode" value="both">
+                            <label for="addBoth">随机</label>
+                        </div>
+                        <div class="radio-item">
+                            <input type="radio" id="addSimple" name="additionMode" value="simple">
+                            <label for="addSimple">简单(<10)</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 减法选项 -->
+            <div class="option-group">
+                <div class="setup-option">
+                    <label>
+                        <input type="checkbox" id="enableSubtraction"> 启用减法
+                    </label>
+                </div>
+                <div class="sub-options" id="subtractionOptions">
+                    <div class="radio-group">
+                        <div class="radio-item">
+                            <input type="radio" id="subBorrowRequired" name="subtractionMode" value="borrow" checked>
+                            <label for="subBorrowRequired">借位</label>
+                        </div>
+                        <div class="radio-item">
+                            <input type="radio" id="subNoBorrow" name="subtractionMode" value="noborrow">
+                            <label for="subNoBorrow">没借位</label>
+                        </div>
+                        <div class="radio-item">
+                            <input type="radio" id="subBoth" name="subtractionMode" value="both">
+                            <label for="subBoth">随机</label>
+                        </div>
+                        <div class="radio-item">
+                            <input type="radio" id="subSimple" name="subtractionMode" value="simple">
+                            <label for="subSimple">简单(<20)</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 乘法选项 -->
+            <div class="option-group">
+                <div class="setup-option">
+                    <label>
+                        <input type="checkbox" id="enableMultiplication" checked> 启用乘法
+                    </label>
+                </div>
+                <div class="sub-options" id="multiplicationOptions">
+                    <div class="radio-group">
+                        <div class="radio-item">
+                            <input type="radio" id="mulSingleDigit" name="multiplicationMode" value="single" checked>
+                            <label for="mulSingleDigit">简单</label>
+                        </div>
+                        <div class="radio-item">
+                            <input type="radio" id="mulTwoAndOneDigit" name="multiplicationMode" value="two_one">
+                            <label for="mulTwoAndOneDigit">中等</label>
+                        </div>
+                        <div class="radio-item">
+                            <input type="radio" id="mulTwoDigit" name="multiplicationMode" value="two">
+                            <label for="mulTwoDigit">难(xx*yy)</label>
+                        </div>
+                        <div class="radio-item">
+                            <input type="radio" id="mulBoth" name="multiplicationMode" value="both">
+                            <label for="mulBoth">随机</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 除法选项 -->
+            <div class="option-group">
+                <div class="setup-option">
+                    <label>
+                        <input type="checkbox" id="enableDivision"> 启用除法
+                    </label>
+                </div>
+                <div class="sub-options" id="divisionOptions">
+                    <div class="radio-group">
+                        <div class="radio-item">
+                            <input type="radio" id="divTwoOne" name="divisionMode" value="two_one">
+                            <label for="divTwoOne">简单</label>
+                        </div>
+                        <div class="radio-item">
+                            <input type="radio" id="divThreeOne" name="divisionMode" value="three_one">
+                            <label for="divThreeOne">中等(xxx/x)</label>
+                        </div>
+                        <div class="radio-item">
+                            <input type="radio" id="divThreeTwo" name="divisionMode" value="three_two">
+                            <label for="divThreeTwo">难(xxx/xx)</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="text-align: center; margin-top: 30px;">
+                <button id="startBtn">开始战斗</button>
+            </div>
+        </div>
+
+        <!-- 游戏界面 -->
+        <div id="gameScreen">
+            <!-- 暂停按钮 -->
+            <button id="pauseBtn">暂停</button>
+            
+            <!-- 暂停遮罩 -->
+            <div id="pauseOverlay">
+                <div class="pause-text">游戏暂停</div>
+            </div>
+            
+            <!-- 战场 -->
+            <div id="battleField">
+                <!-- 玩家坦克 -->
+                <div id="playerTank" class="tank">
+                    <div class="health-bar">
+                        <div class="health-bar-fill" style="width: 100%;"></div>
+                    </div>
+                    <div class="tank-body"></div>
+                    <div class="tank-barrel"></div>
+                </div>
+                <!-- 敌方坦克 -->
+                <div id="enemyTank" class="tank">
+                    <div class="enemy-level">Lv.1</div>
+                    <div class="health-bar">
+                        <div class="health-bar-fill" style="width: 100%;"></div>
+                    </div>
+                    <div class="tank-body"></div>
+                    <div class="tank-barrel"></div>
+                </div>
+            </div>
+
+            <!-- 倒计时进度条 -->
+            <div id="timerContainer">
+                <div id="timerProgress"></div>
+                <div id="timerText">10</div>
+            </div>
+
+            <!-- 全屏闪烁报警 -->
+            <div id="timeoutWarning"></div>
+
+            <!-- 得分显示 -->
+            <div id="scoreCounter">得分: 0</div>
+
+            <!-- 失误榜 -->
+            <div id="mistakeCounter">失误: 0</div>
+
+            <!-- 连击计数器 -->
+            <div id="comboCounter" class="combo-counter">
+                快速连击: <span id="comboCount">0</span>
+            </div>
+
+            <!-- 题目区域 -->
+            <div id="questionArea">
+                <div id="question"></div>
+                <div id="answerOptions"></div>
+                <div class="keyboard-hint">快捷键: 1/2/3</div>
+            </div>
+
+            <!-- 统计信息 -->
+            <div id="stats">
+                <div>总答对: <span id="totalCorrect">0</span></div>
+                <div>连续快速答对: <span id="quickSteak">0</span></div>
+                <div>总快速答对: <span id="quickAnswerTotalNumber">0</span></div>
+            </div>
+        </div>
+        
+        <!-- GameOver画面 -->
+        <div id="gameOverScreen">
+            <h2>GAME OVER</h2>
+            <div class="stats-container">
+                <div class="stat-item">
+                    <span class="stat-label">最终得分：</span>
+                    <span class="stat-value" id="finalScore">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">总答对题数：</span>
+                    <span class="stat-value" id="finalCorrect">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">总失误次数：</span>
+                    <span class="stat-value" id="finalMistakes">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">平均答题时间：</span>
+                    <span class="stat-value" id="avgTime">0.0秒</span>
+                </div>
+            </div>
+            
+            <div class="slow-questions">
+                <h3>答题最慢的三道题：</h3>
+                <div id="slowQuestionsList"></div>
+            </div>
+            
+            <button id="retryBtn">再次挑战</button>
+        </div>
+    </div>
+
+    <!-- 游戏模块脚本 -->
+    <script src="animations.js"></script>
+    <script src="questionLogic.js"></script>
+    <script src="gameRules.js"></script>
+    <script src="game.js"></script>
+</body>
 </html>

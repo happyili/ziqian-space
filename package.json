@@ -1,29 +1,33 @@
 {
-  "name": "vite-react",
-  "private": true,
-  "version": "0.0.0",
-  "type": "module",
+  "name": "tank-math-battle",
+  "version": "1.0.0",
+  "description": "坦克数学大战 - 一个有趣的数学练习游戏",
+  "main": "index.html",
   "scripts": {
-    "dev": "vite",
-    "build": "tsc -b && vite build",
-    "lint": "eslint .",
-    "preview": "vite preview"
+    "dev": "npx serve .",
+    "build": "echo 'Static site - no build required'",
+    "start": "npx serve .",
+    "preview": "npx serve ."
   },
-  "dependencies": {
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+  "keywords": [
+    "math",
+    "game",
+    "education",
+    "tank",
+    "javascript",
+    "html5"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "homepage": "https://github.com/yourusername/tank-math-battle",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/tank-math-battle.git"
   },
   "devDependencies": {
-    "@eslint/js": "^9.9.0",
-    "@types/react": "^18.3.3",
-    "@types/react-dom": "^18.3.0",
-    "@vitejs/plugin-react": "^4.3.1",
-    "eslint": "^9.9.0",
-    "eslint-plugin-react-hooks": "^5.1.0-rc.0",
-    "eslint-plugin-react-refresh": "^0.4.9",
-    "globals": "^15.9.0",
-    "typescript": "^5.5.3",
-    "typescript-eslint": "^8.0.1",
-    "vite": "^5.4.1"
+    "serve": "^14.2.0"
+  },
+  "engines": {
+    "node": ">=14.0.0"
   }
 }
