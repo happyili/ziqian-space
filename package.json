@@ -1,7 +1,7 @@
 {
-  "name": "tank-math-battle",
+  "name": "ziqian-space",
   "version": "1.0.0",
-  "description": "坦克数学大战 - 一个有趣的数学练习游戏",
+  "description": "Ziqian的个人学习空间 - 包含数学游戏、学习工具和个人成长记录",
   "main": "index.html",
   "scripts": {
     "dev": "npx serve .",
@@ -10,19 +10,21 @@
     "preview": "npx serve ."
   },
   "keywords": [
+    "learning",
+    "education",
     "math",
     "game",
-    "education",
-    "tank",
+    "personal-space",
+    "student",
     "javascript",
     "html5"
   ],
-  "author": "Your Name",
+  "author": "Ziqian",
   "license": "MIT",
-  "homepage": "https://github.com/yourusername/tank-math-battle",
+  "homepage": "https://github.com/happyili/ziqian-space",
   "repository": {
     "type": "git",
-    "url": "https://github.com/yourusername/tank-math-battle.git"
+    "url": "https://github.com/happyili/ziqian-space.git"
   },
   "devDependencies": {
     "serve": "^14.2.0"
