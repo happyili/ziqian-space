@@ -146,6 +146,9 @@ class MathTankGame {
         // 答题记录
         this.questionRecords = [];
         
+        // 玩家昵称
+        this.playerNickname = '豆';
+        
         // 初始化模块
         this.animations = new GameAnimations(this);
         this.gameRules = new GameRules(this);
@@ -307,6 +310,9 @@ class MathTankGame {
         // 重置坦克显示
         this.resetTankDisplay();
         
+        // 更新玩家昵称显示
+        this.updatePlayerNicknameDisplay();
+        
         // 重置奥特曼模式
         this.gameRules.resetUltramanMode();
 
@@ -330,6 +336,10 @@ class MathTankGame {
         this.enableSubtraction = document.getElementById('enableSubtraction').checked;
         this.enableMultiplication = document.getElementById('enableMultiplication').checked;
         this.enableDivision = document.getElementById('enableDivision').checked;
+        
+        // 获取玩家昵称
+        const nicknameInput = document.getElementById('playerNickname');
+        this.playerNickname = nicknameInput ? nicknameInput.value.trim() || '豆' : '豆';
         
         // 获取加法模式
         const additionModeRadios = document.getElementsByName('additionMode');
@@ -421,6 +431,16 @@ class MathTankGame {
         enemyTank.classList.remove('tank-exploding');
         enemyTank.querySelector('.enemy-level').textContent = 'Lv.1';
         this.gameRules.updateEnemyHealthBar();
+    }
+
+    /**
+     * 更新玩家昵称显示
+     */
+    updatePlayerNicknameDisplay() {
+        const nicknameDisplay = document.getElementById('playerNicknameDisplay');
+        if (nicknameDisplay) {
+            nicknameDisplay.textContent = "小" + this.playerNickname;
+        }
     }
 
     /**

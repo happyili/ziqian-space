@@ -27,6 +27,7 @@ body {
     height: 100vh;
     position: relative;
     background-color: #16676a;  
+    min-width: 400px;
 }
 
 /* 设置界面 */
@@ -52,22 +53,33 @@ body {
 }
 
 .setup-option {
-    margin: 5px 0;
     color: #fff;
 }
 
 .setup-option label {
-    display: block;
     margin-bottom: 5px;
     font-weight: bold;
+    font-size:medium;
     color: #0f0;
+}
+
+div.setup-nickname {
+    padding: 10px;
+    border: 0px;
+    background-color: rgb(28, 27, 27);
+    font-size: 14px;
+    font-family: 'Courier New', monospace;
+}
+
+.setup-nickname .setup-option {
+    margin-left: 10px;
 }
 
 .option-group {
     margin: 10px 0;
     padding: 10px 15px;
-    border: 1px solid #555;
-    border-radius: 5px;
+    border: 0px solid #555;
+    border-radius: 3px;
     background-color: #444;
 }
 
@@ -114,6 +126,29 @@ body {
 .setup-option input[type="checkbox"]:disabled {
     opacity: 0.5;
     cursor: not-allowed;
+}
+
+/* 昵称输入框样式 */
+.setup-option input[type="text"] {
+    background-color: #222;
+    color: #0f0;
+    border: 1px solid #0f0;
+    padding: 6px 6px;
+    font-size: 14px;
+    font-family: 'Courier New', monospace;
+    border-radius: 5px;
+    margin-left: 10px;
+    width: 40px;
+}
+
+.setup-option input[type="text"]:focus {
+    outline: none;
+    border-color: #0ff;
+    box-shadow: 0 0 10px #0ff;
+}
+
+.setup-option input[type="text"]::placeholder {
+    color: #666;
 }
 
 #startBtn {
@@ -284,6 +319,20 @@ body {
     font-size: 20px;
     font-weight: bold;
     text-shadow: 2px 2px 4px #000;
+}
+
+/* 玩家昵称样式 */
+.player-nickname {
+    position: absolute;
+    top: -46px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: #0f0;
+    font-size: 20px;
+    font-weight: bold;
+    text-shadow: 2px 2px 4px #000;
+    white-space: nowrap;
+    min-width: max-content;
 }
 
 /* 奥特曼模式样式 */
@@ -1239,23 +1288,28 @@ body {
         top: -32px;
     }
 
+    /* 玩家昵称显示调整 */
+    .player-nickname {
+        font-size: 14px;
+        top: -38px;
+        white-space: nowrap;
+        min-width: max-content;
+    }
+
     /* 顶部控制栏调整 */
     #pauseBtn {
-        top: 50px;
         left: 10px;
         padding: 8px 12px;
         font-size: 16px;
     }
 
     #scoreCounter {
-        top: 50px;
         left: 100px;
         font-size: 16px;
         padding: 8px 15px;
     }
 
     #mistakeCounter {
-        top: 50px;
         right: 10px;
         font-size: 16px;
         padding: 8px 15px;
@@ -1269,14 +1323,6 @@ body {
         padding: 5px 10px;
     }
 
-    /* 倒计时进度条调整 */
-    #timerContainer {
-        height: 40px;
-    }
-
-    #timerText {
-        font-size: 20px;
-    }
 
     /* 答案选项移动端适配 */
     #answerOptions {
@@ -1439,14 +1485,6 @@ body {
     }
 
 
-    #timerContainer {
-        height: 35px;
-    }
-
-    #timerText {
-        font-size: 16px;
-    }
-
     /* 进一步缩小坦克 */
     :root {
         --tank-width: 35px;
@@ -1456,6 +1494,20 @@ body {
         --barrel-height: 5px;
         --barrel-top-offset: 10px;
         --barrel-extend: 12px;
+    }
+
+    /* 玩家昵称显示调整 */
+    .player-nickname {
+        font-size: 12px;
+        top: -30px;
+        white-space: nowrap;
+        min-width: max-content;
+    }
+
+    /* 敌方坦克等级显示调整 */
+    .enemy-level {
+        font-size: 12px;
+        top: -30px;
     }
 
     /* 移动端奥特曼模式适配 */

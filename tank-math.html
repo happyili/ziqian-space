@@ -9,12 +9,12 @@
         /* 返回按钮样式 */
         .back-btn {
             position: fixed;
-            top: 20px;
-            left: 20px;
-            background-color: #333;
+            top: 5px;
+            left: 18px;
+            background-color: #507136;
             color: #0f0;
             border: 2px solid #0f0;
-            padding: 10px 20px;
+            padding: 8px 5px;
             font-size: 16px;
             font-weight: bold;
             cursor: pointer;
@@ -42,6 +42,14 @@
         <div id="setupScreen">
             <h1 style="text-align: center;">坦克数学大战</h1>
             
+            <!-- 昵称输入选项 -->
+            <div class="option-group setup-nickname">
+                <div class="setup-option">
+                    <label for="playerNickname">玩家昵称：</label>
+                    小<input type="text" id="playerNickname" value="豆" maxlength="2" placeholder="输入你的昵称">
+                </div>
+            </div>
+
             <!-- 加法选项 -->
             <div class="option-group">
                 <div class="setup-option">
@@ -173,6 +181,7 @@
             <div id="battleField">
                 <!-- 玩家坦克 -->
                 <div id="playerTank" class="tank">
+                    <div class="player-nickname" id="playerNicknameDisplay">豆</div>
                     <div class="health-bar">
                         <div class="health-bar-fill" style="width: 100%;"></div>
                     </div>

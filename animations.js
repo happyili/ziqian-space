@@ -220,7 +220,7 @@ class GameAnimations {
     showBigDummy() {
         const dummy = document.createElement('div');
         dummy.className = 'bigDummy';
-        dummy.textContent = '大呆豆';
+        dummy.textContent = '大呆' + this.game.playerNickname;
         
         document.getElementById('gameScreen').appendChild(dummy);
         
@@ -233,7 +233,7 @@ class GameAnimations {
     showBigSmart() {
         const dummy = document.createElement('div');
         dummy.className = 'bigDummy';
-        dummy.textContent = '大大大聪明聪明豆';
+        dummy.textContent = '大大大聪明' + this.game.playerNickname;
         
         document.getElementById('gameScreen').appendChild(dummy);
         
