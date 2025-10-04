@@ -1,0 +1,573 @@
+/* 奥特曼逻辑推理游戏 - 动画效果样式 */
+
+/* 基础动画类 */
+.animated {
+    animation-duration: 1s;
+    animation-fill-mode: both;
+}
+
+/* 奥特曼角色动画 */
+.ultraman-character {
+    animation: ultramanIdle 3s ease-in-out infinite;
+}
+
+@keyframes ultramanIdle {
+    0%, 100% { transform: scale(1) rotate(0deg); }
+    25% { transform: scale(1.05) rotate(1deg); }
+    75% { transform: scale(1.05) rotate(-1deg); }
+}
+
+.ultraman-character.attacking {
+    animation: ultramanAttack 1s ease;
+}
+
+@keyframes ultramanAttack {
+    0% { transform: scale(1) rotate(0deg); }
+    25% { transform: scale(1.3) rotate(-15deg); }
+    50% { transform: scale(1.2) rotate(15deg); }
+    75% { transform: scale(1.3) rotate(-10deg); }
+    100% { transform: scale(1) rotate(0deg); }
+}
+
+/* 能量环动画 */
+.energy-ring {
+    animation: energyPulse 2s ease-in-out infinite;
+}
+
+@keyframes energyPulse {
+    0%, 100% { 
+        transform: scale(1); 
+        opacity: 0.7; 
+        box-shadow: 0 0 20px rgba(255,215,0,0.5);
+    }
+    50% { 
+        transform: scale(1.1); 
+        opacity: 1; 
+        box-shadow: 0 0 30px rgba(255,215,0,0.8);
+    }
+}
+
+/* 卡片翻转动画 */
+.monster-card {
+    transition: transform 0.6s ease;
+}
+
+.monster-card.flipping {
+    animation: cardFlip 0.6s ease;
+}
+
+@keyframes cardFlip {
+    0% { transform: rotateY(0deg); }
+    50% { transform: rotateY(90deg); }
+    100% { transform: rotateY(0deg); }
+}
+
+/* 选项按钮悬停动画 */
+.option-btn {
+    transition: all 0.3s ease;
+}
+
+.option-btn:hover {
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+}
+
+.option-btn:active {
+    transform: translateY(-1px) scale(0.98);
+}
+
+/* 难度按钮动画 */
+.difficulty-btn {
+    transition: all 0.3s ease;
+}
+
+.difficulty-btn:hover {
+    transform: translateY(-5px) scale(1.05);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+}
+
+.difficulty-btn:active {
+    transform: translateY(-2px) scale(1.02);
+}
+
+/* 进度条动画 */
+.progress-fill {
+    transition: width 0.5s ease;
+}
+
+.progress-fill.progress-updating {
+    animation: progressGlow 0.5s ease;
+}
+
+@keyframes progressGlow {
+    0%, 100% { 
+        box-shadow: 0 0 5px rgba(255,215,0,0.5); 
+    }
+    50% { 
+        box-shadow: 0 0 20px rgba(255,215,0,0.8); 
+    }
+}
+
+/* 分数增加动画 */
+.score-increase-effect {
+    animation: scoreFloat 1.5s ease;
+}
+
+@keyframes scoreFloat {
+    0% { 
+        transform: translateY(0) scale(1); 
+        opacity: 1; 
+    }
+    100% { 
+        transform: translateY(-50px) scale(1.2); 
+        opacity: 0; 
+    }
+}
+
+/* 连击动画 */
+.streak-effect {
+    animation: streakPop 2s ease;
+}
+
+@keyframes streakPop {
+    0% { 
+        transform: translate(-50%, -50%) scale(0); 
+        opacity: 0; 
+    }
+    20% { 
+        transform: translate(-50%, -50%) scale(1.2); 
+        opacity: 1; 
+    }
+    80% { 
+        transform: translate(-50%, -50%) scale(1); 
+        opacity: 1; 
+    }
+    100% { 
+        transform: translate(-50%, -50%) scale(0); 
+        opacity: 0; 
+    }
+}
+
+.streak-fireworks {
+    animation: fireworks 2s ease;
+}
+
+@keyframes fireworks {
+    0%, 100% { 
+        transform: scale(1) rotate(0deg); 
+    }
+    25% { 
+        transform: scale(1.2) rotate(90deg); 
+    }
+    50% { 
+        transform: scale(1.1) rotate(180deg); 
+    }
+    75% { 
+        transform: scale(1.2) rotate(270deg); 
+    }
+}
+
+/* 胜利庆祝动画 */
+.victory-celebration {
+    animation: celebrationFadeIn 0.5s ease;
+}
+
+@keyframes celebrationFadeIn {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+}
+
+.celebration-text {
+    animation: celebrationBounce 2s ease;
+}
+
+@keyframes celebrationBounce {
+    0%, 100% { 
+        transform: translate(-50%, -50%) scale(1); 
+    }
+    25% { 
+        transform: translate(-50%, -50%) scale(1.2); 
+    }
+    50% { 
+        transform: translate(-50%, -50%) scale(1.1); 
+    }
+    75% { 
+        transform: translate(-50%, -50%) scale(1.3); 
+    }
+}
+
+.confetti {
+    animation: confettiFall 2s ease;
+}
+
+@keyframes confettiFall {
+    0% { 
+        transform: translateY(-100px) rotate(0deg); 
+        opacity: 1; 
+    }
+    100% { 
+        transform: translateY(100vh) rotate(360deg); 
+        opacity: 0; 
+    }
+}
+
+/* 卡片获得动画 */
+.card-award-effect {
+    animation: cardAwardSlide 3s ease;
+}
+
+@keyframes cardAwardSlide {
+    0% { 
+        transform: translate(-50%, -50%) scale(0); 
+        opacity: 0; 
+    }
+    20% { 
+        transform: translate(-50%, -50%) scale(1); 
+        opacity: 1; 
+    }
+    80% { 
+        transform: translate(-50%, -50%) scale(1); 
+        opacity: 1; 
+    }
+    100% { 
+        transform: translate(-50%, -50%) scale(0); 
+        opacity: 0; 
+    }
+}
+
+.awarded-card {
+    animation: cardGlow 3s ease;
+}
+
+@keyframes cardGlow {
+    0%, 100% { 
+        box-shadow: 0 0 20px rgba(255,215,0,0.5); 
+    }
+    50% { 
+        box-shadow: 0 0 40px rgba(255,215,0,0.8); 
+    }
+}
+
+/* 正确/错误动画 */
+.correct-effect, .wrong-animation {
+    animation: popIn 1s ease;
+}
+
+@keyframes popIn {
+    0% { 
+        transform: translate(-50%, -50%) scale(0); 
+        opacity: 0; 
+    }
+    50% { 
+        transform: translate(-50%, -50%) scale(1.2); 
+        opacity: 1; 
+    }
+    100% { 
+        transform: translate(-50%, -50%) scale(1); 
+        opacity: 0; 
+    }
+}
+
+/* 时间警告动画 */
+.timer.warning {
+    animation: timerPulse 1s infinite;
+}
+
+@keyframes timerPulse {
+    0%, 100% { 
+        transform: scale(1); 
+        color: #ff4757; 
+    }
+    50% { 
+        transform: scale(1.1); 
+        color: #ff3838; 
+    }
+}
+
+.timer.flashing {
+    animation: timerFlash 0.2s ease;
+}
+
+@keyframes timerFlash {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+}
+
+/* 屏幕切换动画 */
+.screen.fade-in {
+    animation: screenFadeIn 0.3s ease;
+}
+
+@keyframes screenFadeIn {
+    0% { 
+        opacity: 0; 
+        transform: translateY(20px); 
+    }
+    100% { 
+        opacity: 1; 
+        transform: translateY(0); 
+    }
+}
+
+.screen.fade-out {
+    animation: screenFadeOut 0.3s ease;
+}
+
+@keyframes screenFadeOut {
+    0% { 
+        opacity: 1; 
+        transform: translateY(0); 
+    }
+    100% { 
+        opacity: 0; 
+        transform: translateY(-20px); 
+    }
+}
+
+/* 加载动画 */
+.loading-spinner {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.loading-spinner.spinning {
+    animation: spin 1s linear infinite;
+}
+
+/* 弹窗动画 */
+.modal {
+    animation: modalFadeIn 0.3s ease;
+}
+
+@keyframes modalFadeIn {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+}
+
+.modal-content {
+    animation: modalSlideIn 0.3s ease;
+}
+
+@keyframes modalSlideIn {
+    0% { 
+        transform: translateY(-50px); 
+        opacity: 0; 
+    }
+    100% { 
+        transform: translateY(0); 
+        opacity: 1; 
+    }
+}
+
+/* 文字动画 */
+.text-animation {
+    animation: textFloat 2s ease;
+}
+
+@keyframes textFloat {
+    0% { 
+        transform: translateY(0) scale(1); 
+        opacity: 1; 
+    }
+    100% { 
+        transform: translateY(-30px) scale(1.1); 
+        opacity: 0; 
+    }
+}
+
+/* 震动动画 */
+.shaking {
+    animation: shake 0.5s ease;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+
+/* 弹跳动画 */
+.bouncing {
+    animation: bounce 0.6s ease;
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-20px); }
+}
+
+/* 缩放动画 */
+.scaling {
+    animation: scale 0.3s ease;
+}
+
+@keyframes scale {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+/* 旋转动画 */
+.rotating {
+    animation: rotate 0.5s ease;
+}
+
+@keyframes rotate {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* 淡入动画 */
+.fade-in {
+    animation: fadeIn 1s ease;
+}
+
+@keyframes fadeIn {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+}
+
+/* 淡出动画 */
+.fade-out {
+    animation: fadeOut 1s ease;
+}
+
+@keyframes fadeOut {
+    0% { opacity: 1; }
+    100% { opacity: 0; }
+}
+
+/* 能量波动画 */
+.energy-wave {
+    animation: energyWaveAnimation 1s ease;
+}
+
+@keyframes energyWaveAnimation {
+    0% { 
+        transform: translate(-50%, -50%) scale(0); 
+        opacity: 1; 
+    }
+    100% { 
+        transform: translate(-50%, -50%) scale(3); 
+        opacity: 0; 
+    }
+}
+
+/* 爆炸效果动画 */
+.explosion {
+    animation: explosionAnimation 0.8s ease;
+}
+
+@keyframes explosionAnimation {
+    0% { 
+        transform: scale(0); 
+        opacity: 1; 
+    }
+    50% { 
+        transform: scale(1.5); 
+        opacity: 0.8; 
+    }
+    100% { 
+        transform: scale(2); 
+        opacity: 0; 
+    }
+}
+
+/* 粒子效果动画 */
+.particle {
+    animation: particleFloat 1s ease;
+}
+
+@keyframes particleFloat {
+    0% { 
+        transform: translateY(0) scale(1); 
+        opacity: 1; 
+    }
+    100% { 
+        transform: translateY(-50px) scale(0); 
+        opacity: 0; 
+    }
+}
+
+/* 卡片墙动画 */
+.card-wall .card {
+    animation: cardSlideIn 0.5s ease;
+}
+
+@keyframes cardSlideIn {
+    0% { 
+        transform: translateY(50px); 
+        opacity: 0; 
+    }
+    100% { 
+        transform: translateY(0); 
+        opacity: 1; 
+    }
+}
+
+/* 统计数字动画 */
+.stat-value {
+    animation: numberCountUp 1s ease;
+}
+
+@keyframes numberCountUp {
+    0% { transform: scale(0.8); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+/* 成就徽章动画 */
+.achievement-badge {
+    animation: badgeGlow 2s ease;
+}
+
+@keyframes badgeGlow {
+    0%, 100% { 
+        box-shadow: 0 0 20px rgba(255,215,0,0.5); 
+    }
+    50% { 
+        box-shadow: 0 0 40px rgba(255,215,0,0.8); 
+    }
+}
+
+/* 响应式动画 */
+@media (max-width: 768px) {
+    .ultraman-character {
+        animation-duration: 2s;
+    }
+    
+    .monster-card {
+        transition-duration: 0.4s;
+    }
+    
+    .difficulty-btn {
+        transition-duration: 0.2s;
+    }
+}
+
+@media (max-width: 480px) {
+    .ultraman-character {
+        animation-duration: 1.5s;
+    }
+    
+    .monster-card {
+        transition-duration: 0.3s;
+    }
+}
+
+/* 动画性能优化 */
+.animated, .ultraman-character, .monster-card, .option-btn, .difficulty-btn {
+    will-change: transform;
+}
+
+/* 减少动画（用户偏好） */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}

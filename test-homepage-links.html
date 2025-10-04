@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>首页链接测试</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background: #f0f0f0; }
+        .test-btn { background: #007cba; color: white; border: none; padding: 15px 25px; margin: 10px; border-radius: 8px; cursor: pointer; font-size: 1rem; }
+        .test-btn:hover { background: #005a8b; }
+        .result { background: white; padding: 15px; margin: 10px 0; border-radius: 8px; border-left: 4px solid #007cba; }
+        .error { border-left-color: #e74c3c; background: #fdf2f2; color: #721c24; }
+        .success { border-left-color: #27ae60; background: #f2fdf2; color: #155724; }
+        .link-test { margin: 10px 0; padding: 10px; background: #f8f9fa; border-radius: 5px; }
+        .link-test a { color: #007cba; text-decoration: none; font-weight: bold; }
+        .link-test a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <h1>🔗 首页链接测试</h1>
+    
+    <div class="result success">
+        <h3>✅ 奥特曼逻辑推理游戏已添加到首页</h3>
+        <p>游戏已成功集成到"创意编程"模块的"逻辑思维"部分</p>
+    </div>
+    
+    <div class="link-test">
+        <h4>🏠 主要链接测试：</h4>
+        <p><strong>首页：</strong> <a href="http://localhost:8000/" target="_blank">http://localhost:8000/</a></p>
+        <p><strong>首页主页面：</strong> <a href="http://localhost:8000/home.html" target="_blank">http://localhost:8000/home.html</a></p>
+        <p><strong>坦克数学游戏：</strong> <a href="http://localhost:8000/tank-math/index.html" target="_blank">http://localhost:8000/tank-math/index.html</a></p>
+        <p><strong>奥特曼逻辑推理游戏：</strong> <a href="http://localhost:8000/ultraman-logic-game/index.html" target="_blank">http://localhost:8000/ultraman-logic-game/index.html</a></p>
+    </div>
+    
+    <div class="result">
+        <h3>📋 更新内容说明：</h3>
+        <ul>
+            <li>✅ 在"创意编程"模块中添加了"奥特曼逻辑推理"卡片</li>
+            <li>✅ 使用了合适的图标 🦸‍♂️ 和描述</li>
+            <li>✅ 添加了特性标签：序列推理、模式识别、逻辑分析、AI智能</li>
+            <li>✅ 设置了正确的链接路径：<code>ultraman-logic-game/index.html</code></li>
+            <li>✅ 将完成模块数量从1更新为2</li>
+            <li>✅ 保持了与现有"坦克数学大战"相同的样式风格</li>
+        </ul>
+    </div>
+    
+    <div class="result">
+        <h3>🎮 游戏特色：</h3>
+        <ul>
+            <li>🧠 多种逻辑推理类型（序列、模式、比较、分类、因果、演绎）</li>
+            <li>🏆 三个难度等级（简单、中等、困难）</li>
+            <li>🎴 奥特曼卡片收集系统</li>
+            <li>🤖 AI智能题目生成（支持OpenRouter API）</li>
+            <li>📊 详细的能力分析报告</li>
+            <li>🎨 精美的动画和UI设计</li>
+        </ul>
+    </div>
+    
+    <div class="result success">
+        <h3>🚀 测试建议：</h3>
+        <ol>
+            <li>点击上方的"首页主页面"链接查看更新后的首页</li>
+            <li>在首页找到"创意编程"模块中的"奥特曼逻辑推理"卡片</li>
+            <li>点击"开始游戏"按钮测试链接是否正常工作</li>
+            <li>验证游戏是否能正常运行</li>
+        </ol>
+    </div>
+    
+    <div style="text-align: center; margin-top: 30px;">
+        <button class="test-btn" onclick="window.open('http://localhost:8000/home.html', '_blank')">
+            🏠 打开首页
+        </button>
+        <button class="test-btn" onclick="window.open('http://localhost:8000/ultraman-logic-game/index.html', '_blank')">
+            🦸‍♂️ 直接打开奥特曼游戏
+        </button>
+    </div>
+    
+    <script>
+        // 页面加载完成后显示成功信息
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('✅ 奥特曼逻辑推理游戏已成功添加到首页！');
+            console.log('📍 位置：创意编程 > 逻辑思维');
+            console.log('🔗 链接：ultraman-logic-game/index.html');
+        });
+    </script>
+</body>
+</html>

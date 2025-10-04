@@ -38,12 +38,14 @@ ziqian-space/
 ├── index.html          # 入口页面（重定向到主页）
 ├── home.html           # 个人空间主页
 ├── home-style.css      # 主页样式文件
-├── tank-math.html      # 坦克数学大战游戏
 ├── style.css           # 游戏样式文件
-├── game.js             # 主游戏逻辑
-├── animations.js       # 动画效果模块
-├── questionLogic.js    # 题目生成模块
-├── gameRules.js        # 游戏规则模块
+├── tank-math/          # 坦克数学大战游戏目录
+│   ├── index.html      # 游戏主页面
+│   ├── game.js         # 主游戏逻辑
+│   ├── animations.js   # 动画效果模块
+│   ├── questionLogic.js # 题目生成模块
+│   └── gameRules.js    # 游戏规则模块
+├── ultraman-logic-game/ # 奥特曼逻辑推理游戏目录
 ├── vercel.json         # Vercel 部署配置
 ├── package.json        # 项目配置
 └── README.md           # 项目说明

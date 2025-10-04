@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>题目解析单元测试</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background: #f0f0f0; }
+        .test-section { background: white; margin: 20px 0; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .test-case { margin: 15px 0; padding: 15px; border-radius: 5px; border-left: 4px solid #007cba; background: #f8f9fa; }
+        .test-result { margin: 10px 0; padding: 10px; border-radius: 5px; }
+        .success { background: #d4edda; border-color: #c3e6cb; color: #155724; }
+        .error { background: #f8d7da; border-color: #f5c6cb; color: #721c24; }
+        .warning { background: #fff3cd; border-color: #ffeaa7; color: #856404; }
+        .test-btn { background: #007cba; color: white; border: none; padding: 10px 20px; margin: 5px; border-radius: 5px; cursor: pointer; }
+        .test-btn:hover { background: #005a8b; }
+        .test-stats { display: flex; gap: 20px; margin: 20px 0; }
+        .stat-card { background: white; padding: 15px; border-radius: 8px; text-align: center; min-width: 120px; }
+        .stat-number { font-size: 2rem; font-weight: bold; color: #007cba; }
+        .stat-label { font-size: 0.9rem; color: #666; }
+        pre { background: #f8f9fa; padding: 10px; border-radius: 3px; overflow-x: auto; font-size: 0.85rem; }
+        .json-display { background: #f8f9fa; padding: 10px; border-radius: 5px; border: 1px solid #ddd; font-family: 'Courier New', monospace; white-space: pre-wrap; }
+    </style>
+</head>
+<body>
+    <h1>🧪 题目解析单元测试</h1>
+    
+    <div class="test-stats">
+        <div class="stat-card">
+            <div class="stat-number" id="total-tests">0</div>
+            <div class="stat-label">总测试数</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number" id="passed-tests">0</div>
+            <div class="stat-label">通过</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number" id="failed-tests">0</div>
+            <div class="stat-label">失败</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number" id="success-rate">0%</div>
+            <div class="stat-label">成功率</div>
+        </div>
+    </div>
+    
+    <div>
+        <button class="test-btn" onclick="runAllTests()">运行所有测试</button>
+        <button class="test-btn" onclick="runJSONTests()">测试JSON解析</button>
+        <button class="test-btn" onclick="runLegacyTests()">测试文本解析</button>
+        <button class="test-btn" onclick="runValidationTests()">测试验证逻辑</button>
+        <button class="test-btn" onclick="clearResults()">清空结果</button>
+    </div>
+    
+    <div id="test-results"></div>
+    
+    <!-- 加载脚本 -->
+    <script src="config/gameConfig.js"></script>
+    <script src="config/questionTemplates.js"></script>
+    <script src="js/llmIntegration.js"></script>
+    
+    <script>
+        const testResults = document.getElementById('test-results');
+        let testStats = { total: 0, passed: 0, failed: 0 };
+        
+        // 测试数据
+        const testCases = {
+            validJSON: {
+                name: '有效的JSON格式',
+                input: `{
+  "story": "奥特曼在宇宙中发现了一个神秘的数字序列：2, 4, 8, 16, ?",
+  "question": "下一个数字应该是什么？",
+  "options": ["20", "24", "32", "64"],
+  "correctAnswer": "C",
+  "explanation": "这是一个等比数列，每个数字都是前一个数字的2倍",
+  "hint": "观察每个数字之间的倍数关系"
+}`,
+                shouldPass: true
+            },
+            
+            jsonWithMarkdown: {
+                name: 'Markdown代码块中的JSON',
+                input: `\`\`\`json
+{
+  "story": "奥特曼遇到了图案序列：🔴🔵🔴🔵🔴",
+  "question": "下一个图案应该是什么？",
+  "options": ["🔴", "🔵", "🟡", "🟢"],
+  "correctAnswer": "B",
+  "explanation": "这是一个交替出现的模式",
+  "hint": "观察颜色的交替规律"
+}
+\`\`\``,
+                shouldPass: true
+            },
+            
+            validLegacyFormat: {
+                name: '有效的文本格式',
+                input: `故事：奥特曼在战斗中发现了一个逻辑谜题：如果A大于B，B大于C，那么A和C的关系是什么？
+题目：根据给定条件，A和C的关系是？
+选项A：A大于C
+选项B：A小于C
+选项C：A等于C
+选项D：无法确定
+正确答案：A
+解题思路：根据传递性，如果A>B且B>C，那么A>C
+提示：想想数学中的大小关系传递性`,
+                shouldPass: true
+            },
+            
+            invalidJSON: {
+                name: '无效的JSON格式',
+                input: `{
+  "story": "奥特曼的故事",
+  "question": "什么问题？"
+  // 缺少选项和答案
+}`,
+                shouldPass: false,
+                expectedError: '选项必须是包含4个元素的数组'
+            },
+            
+            missingFields: {
+                name: '缺少必需字段',
+                input: `{
+  "story": "奥特曼的故事",
+  "options": ["A", "B", "C", "D"],
+  "correctAnswer": "A"
+}`,
+                shouldPass: false,
+                expectedError: '缺少或无效的题目字段'
+            },
+            
+            invalidAnswer: {
+                name: '无效的正确答案',
+                input: `{
+  "story": "奥特曼的故事",
+  "question": "什么问题？",
+  "options": ["选项1", "选项2", "选项3", "选项4"],
+  "correctAnswer": "E"
+}`,
+                shouldPass: false,
+                expectedError: '正确答案必须是A、B、C、D之一'
+            },
+            
+            incompleteOptions: {
+                name: '选项数量不足',
+                input: `{
+  "story": "奥特曼的故事",
+  "question": "什么问题？",
+  "options": ["选项1", "选项2"],
+  "correctAnswer": "A"
+}`,
+                shouldPass: false,
+                expectedError: '选项必须是包含4个元素的数组'
+            },
+            
+            emptyFields: {
+                name: '空字段测试',
+                input: `{
+  "story": "",
+  "question": "什么问题？",
+  "options": ["选项1", "选项2", "选项3", "选项4"],
+  "correctAnswer": "A"
+}`,
+                shouldPass: false,
+                expectedError: '缺少或无效的故事字段'
+            },
+            
+            legacyIncomplete: {
+                name: '不完整的文本格式',
+                input: `故事：奥特曼的故事
+题目：什么问题？
+选项A：选项1
+选项B：选项2
+// 缺少选项C和D`,
+                shouldPass: false,
+                expectedError: '题目格式不完整'
+            }
+        };
+        
+        function clearResults() {
+            testResults.innerHTML = '';
+            testStats = { total: 0, passed: 0, failed: 0 };
+            updateStats();
+        }
+        
+        function updateStats() {
+            document.getElementById('total-tests').textContent = testStats.total;
+            document.getElementById('passed-tests').textContent = testStats.passed;
+            document.getElementById('failed-tests').textContent = testStats.failed;
+            const successRate = testStats.total > 0 ? Math.round((testStats.passed / testStats.total) * 100) : 0;
+            document.getElementById('success-rate').textContent = successRate + '%';
+        }
+        
+        function addTestResult(testName, passed, details, error = null) {
+            const section = document.createElement('div');
+            section.className = 'test-case';
+            
+            const resultClass = passed ? 'success' : 'error';
+            const resultIcon = passed ? '✅' : '❌';
+            
+            let content = `
+                <h4>${resultIcon} ${testName}</h4>
+                <div class="test-result ${resultClass}">
+                    <strong>${passed ? '通过' : '失败'}</strong>
+                    ${details ? `<br><small>${details}</small>` : ''}
+                </div>
+            `;
+            
+            if (error) {
+                content += `<div class="test-result error">
+                    <strong>错误信息:</strong> ${error}
+                </div>`;
+            }
+            
+            section.innerHTML = content;
+            testResults.appendChild(section);
+            
+            testStats.total++;
+            if (passed) {
+                testStats.passed++;
+            } else {
+                testStats.failed++;
+            }
+            updateStats();
+        }
+        
+        function runSingleTest(testName, testCase) {
+            try {
+                const llm = new LLMIntegration();
+                const result = llm.parseQuestionResponse(testCase.input);
+                
+                if (testCase.shouldPass) {
+                    // 验证解析结果的完整性
+                    if (result.story && result.question && result.options.length === 4 && result.correctAnswer) {
+                        addTestResult(testName, true, `成功解析题目，故事长度: ${result.story.length}字符`);
+                    } else {
+                        addTestResult(testName, false, '解析结果不完整', '缺少必需字段');
+                    }
+                } else {
+                    // 不应该通过的测试却通过了
+                    addTestResult(testName, false, '测试应该失败但却成功了', '预期失败但实际成功');
+                }
+            } catch (error) {
+                if (testCase.shouldPass) {
+                    // 应该通过但失败了
+                    addTestResult(testName, false, '解析失败', error.message);
+                } else {
+                    // 预期失败
+                    const expectedError = testCase.expectedError || '';
+                    const actualError = error.message;
+                    const errorMatches = !expectedError || actualError.includes(expectedError);
+                    
+                    if (errorMatches) {
+                        addTestResult(testName, true, `正确捕获了预期错误: ${actualError}`);
+                    } else {
+                        addTestResult(testName, false, `错误信息不匹配，预期: "${expectedError}"，实际: "${actualError}"`);
+                    }
+                }
+            }
+        }
+        
+        function runAllTests() {
+            clearResults();
+            
+            const section = document.createElement('div');
+            section.className = 'test-section';
+            section.innerHTML = '<h2>🚀 运行所有测试</h2>';
+            testResults.appendChild(section);
+            
+            for (const [key, testCase] of Object.entries(testCases)) {
+                runSingleTest(testCase.name, testCase);
+            }
+            
+            // 添加性能测试
+            runPerformanceTest();
+        }
+        
+        function runJSONTests() {
+            clearResults();
+            
+            const section = document.createElement('div');
+            section.className = 'test-section';
+            section.innerHTML = '<h2>📄 JSON格式解析测试</h2>';
+            testResults.appendChild(section);
+            
+            const jsonTests = ['validJSON', 'jsonWithMarkdown', 'invalidJSON', 'missingFields', 'invalidAnswer', 'incompleteOptions', 'emptyFields'];
+            
+            for (const testKey of jsonTests) {
+                if (testCases[testKey]) {
+                    runSingleTest(testCases[testKey].name, testCases[testKey]);
+                }
+            }
+        }
+        
+        function runLegacyTests() {
+            clearResults();
+            
+            const section = document.createElement('div');
+            section.className = 'test-section';
+            section.innerHTML = '<h2>📝 文本格式解析测试</h2>';
+            testResults.appendChild(section);
+            
+            const legacyTests = ['validLegacyFormat', 'legacyIncomplete'];
+            
+            for (const testKey of legacyTests) {
+                if (testCases[testKey]) {
+                    runSingleTest(testCases[testKey].name, testCases[testKey]);
+                }
+            }
+        }
+        
+        function runValidationTests() {
+            clearResults();
+            
+            const section = document.createElement('div');
+            section.className = 'test-section';
+            section.innerHTML = '<h2>🔍 验证逻辑测试</h2>';
+            testResults.appendChild(section);
+            
+            // 测试边界情况
+            const boundaryTests = [
+                {
+                    name: '超长文本处理',
+                    input: `{
+  "story": "${'奥特曼'.repeat(100)}",
+  "question": "什么问题？",
+  "options": ["A", "B", "C", "D"],
+  "correctAnswer": "A"
+}`,
+                    shouldPass: true
+                },
+                {
+                    name: '特殊字符处理',
+                    input: `{
+  "story": "奥特曼遇到了特殊符号：@#$%^&*()!",
+  "question": "这些符号的规律是什么？",
+  "options": ["规律1", "规律2", "规律3", "规律4"],
+  "correctAnswer": "B"
+}`,
+                    shouldPass: true
+                },
+                {
+                    name: '数字类型答案',
+                    input: `{
+  "story": "奥特曼的故事",
+  "question": "什么问题？",
+  "options": ["选项1", "选项2", "选项3", "选项4"],
+  "correctAnswer": 1
+}`,
+                    shouldPass: false,
+                    expectedError: '正确答案必须是A、B、C、D之一'
+                }
+            ];
+            
+            for (const testCase of boundaryTests) {
+                runSingleTest(testCase.name, testCase);
+            }
+        }
+        
+        function runPerformanceTest() {
+            const section = document.createElement('div');
+            section.className = 'test-section';
+            section.innerHTML = '<h2>⚡ 性能测试</h2>';
+            testResults.appendChild(section);
+            
+            const llm = new LLMIntegration();
+            const testInput = testCases.validJSON.input;
+            const iterations = 100;
+            
+            const startTime = performance.now();
+            for (let i = 0; i < iterations; i++) {
+                llm.parseQuestionResponse(testInput);
+            }
+            const endTime = performance.now();
+            
+            const avgTime = (endTime - startTime) / iterations;
+            
+            addTestResult(
+                '解析性能测试',
+                avgTime < 10, // 期望每次解析小于10ms
+                `${iterations}次解析平均耗时: ${avgTime.toFixed(2)}ms`
+            );
+        }
+        
+        // 页面加载后显示测试说明
+        document.addEventListener('DOMContentLoaded', () => {
+            const section = document.createElement('div');
+            section.className = 'test-section';
+            section.innerHTML = `
+                <h2>📋 测试说明</h2>
+                <p>这个测试套件用于验证题目解析功能的正确性和健壮性。包括以下测试类别：</p>
+                <ul>
+                    <li><strong>JSON解析测试</strong>：验证新的JSON格式解析功能</li>
+                    <li><strong>文本解析测试</strong>：验证兼容的文本格式解析功能</li>
+                    <li><strong>验证逻辑测试</strong>：测试数据验证和边界情况处理</li>
+                    <li><strong>性能测试</strong>：确保解析性能满足要求</li>
+                </ul>
+                <p>点击上方按钮开始测试。</p>
+            `;
+            testResults.appendChild(section);
+        });
+    </script>
+</body>
+</html>

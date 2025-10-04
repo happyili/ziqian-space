@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API调用测试</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background: #f0f0f0; }
+        .test-btn { background: #007cba; color: white; border: none; padding: 15px 25px; margin: 10px; border-radius: 8px; cursor: pointer; font-size: 1rem; }
+        .test-btn:hover { background: #005a8b; }
+        .result { background: white; padding: 15px; margin: 10px 0; border-radius: 8px; border-left: 4px solid #007cba; }
+        .error { border-left-color: #e74c3c; background: #fdf2f2; color: #721c24; }
+        .success { border-left-color: #27ae60; background: #f2fdf2; color: #155724; }
+        .warning { border-left-color: #f39c12; background: #fef9e7; color: #856404; }
+        pre { background: #f8f9fa; padding: 10px; border-radius: 5px; overflow-x: auto; font-size: 0.9rem; white-space: pre-wrap; }
+        .status { font-weight: bold; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+    <h1>🔧 API调用修复测试</h1>
+    
+    <div>
+        <button class="test-btn" onclick="testAPIKeyCheck()">检查API密钥</button>
+        <button class="test-btn" onclick="testRequestHeaders()">测试请求头</button>
+        <button class="test-btn" onclick="testFullAPICall()">测试完整API调用</button>
+        <button class="test-btn" onclick="testFallbackQuestion()">测试备用题目</button>
+        <button class="test-btn" onclick="clearResults()">清空结果</button>
+    </div>
+    
+    <div id="results"></div>
+    
+    <!-- 加载脚本 -->
+    <script src="config/gameConfig.js"></script>
+    <script src="config/questionTemplates.js"></script>
+    <script src="js/llmIntegration.js"></script>
+    
+    <script>
+        const results = document.getElementById('results');
+        
+        function addResult(title, content, type = 'result') {
+            const div = document.createElement('div');
+            div.className = type;
+            div.innerHTML = `
+                <div class="status">${title}</div>
+                <pre>${content}</pre>
+            `;
+            results.appendChild(div);
+        }
+        
+        function clearResults() {
+            results.innerHTML = '';
+        }
+        
+        function testAPIKeyCheck() {
+            addResult('🔑 检查API密钥配置', '', 'result');
+            
+            try {
+                const llm = new LLMIntegration();
+                const apiKey = llm.getAPIKey();
+                
+                if (apiKey && apiKey.length > 0) {
+                    addResult('✅ API密钥', `已配置，长度: ${apiKey.length} 字符\n前缀: ${apiKey.substring(0, 10)}...`, 'success');
+                } else {
+                    addResult('⚠️ API密钥', '未配置，将使用备用题目', 'warning');
+                }
+            } catch (error) {
+                addResult('❌ API密钥检查失败', error.message, 'error');
+            }
+        }
+        
+        function testRequestHeaders() {
+            addResult('📡 测试请求头构造', '', 'result');
+            
+            try {
+                const llm = new LLMIntegration();
+                
+                // 模拟构造请求头
+                const headers = {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${llm.getAPIKey()}`,
+                    'HTTP-Referer': window.location.origin,
+                    'X-Title': 'Ultraman Logic Game'
+                };
+                
+                // 检查请求头是否包含非ASCII字符
+                let hasNonASCII = false;
+                for (const [key, value] of Object.entries(headers)) {
+                    if (!/^[\x00-\x7F]*$/.test(key) || !/^[\x00-\x7F]*$/.test(value)) {
+                        hasNonASCII = true;
+                        addResult('❌ 非ASCII字符', `发现在 ${key}: ${value}`, 'error');
+                    }
+                }
+                
+                if (!hasNonASCII) {
+                    addResult('✅ 请求头验证', '所有请求头都是ASCII字符，符合HTTP标准', 'success');
+                }
+                
+                addResult('📋 请求头详情', JSON.stringify(headers, null, 2), 'result');
+                
+            } catch (error) {
+                addResult('❌ 请求头测试失败', error.message, 'error');
+            }
+        }
+        
+        async function testFullAPICall() {
+            addResult('🚀 测试完整API调用', '', 'result');
+            
+            try {
+                const llm = new LLMIntegration();
+                const apiKey = llm.getAPIKey();
+                
+                if (!apiKey || apiKey.length === 0) {
+                    addResult('⚠️ 跳过API调用', '未配置API密钥，无法测试实际API调用', 'warning');
+                    return;
+                }
+                
+                addResult('🔄 正在调用API...', '请等待...', 'result');
+                
+                // 尝试生成一个简单的题目
+                const question = await llm.generateQuestion('sequence', 'easy', '奥特曼拯救地球');
+                
+                if (question && question.story && question.question) {
+                    addResult('✅ API调用成功', `生成的题目:\n故事: ${question.story}\n题目: ${question.question}`, 'success');
+                } else {
+                    addResult('⚠️ API调用部分成功', '收到响应但格式可能不完整', 'warning');
+                }
+                
+            } catch (error) {
+                addResult('❌ API调用失败', `错误: ${error.message}\n\n这是正常的，系统会自动使用备用题目`, 'error');
+                
+                // 测试备用题目是否工作
+                try {
+                    const fallbackQuestion = llm.getFallbackQuestion('sequence', 'easy');
+                    addResult('✅ 备用题目', `备用题目生成成功:\n故事: ${fallbackQuestion.story}`, 'success');
+                } catch (fallbackError) {
+                    addResult('❌ 备用题目失败', fallbackError.message, 'error');
+                }
+            }
+        }
+        
+        async function testFallbackQuestion() {
+            addResult('🛡️ 测试备用题目系统', '', 'result');
+            
+            try {
+                const llm = new LLMIntegration();
+                
+                const difficulties = ['easy', 'medium', 'hard'];
+                const types = ['sequence', 'pattern', 'comparison'];
+                
+                for (const difficulty of difficulties) {
+                    for (const type of types) {
+                        try {
+                            const question = llm.getFallbackQuestion(type, difficulty);
+                            if (question && question.story && question.question) {
+                                addResult(`✅ ${difficulty}-${type}`, `${question.story.substring(0, 30)}...`, 'success');
+                            } else {
+                                addResult(`❌ ${difficulty}-${type}`, '备用题目格式不正确', 'error');
+                            }
+                        } catch (error) {
+                            addResult(`❌ ${difficulty}-${type}`, error.message, 'error');
+                        }
+                    }
+                }
+                
+            } catch (error) {
+                addResult('❌ 备用题目系统失败', error.message, 'error');
+            }
+        }
+        
+        // 页面加载后自动运行测试
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                addResult('📄 自动测试', '页面加载完成，开始自动测试...', 'result');
+                testAPIKeyCheck();
+                testRequestHeaders();
+            }, 500);
+        });
+    </script>
+</body>
+</html>

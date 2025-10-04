@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>快速测试 - 题目生成</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background: #f0f0f0; }
+        .test-btn { background: #007cba; color: white; border: none; padding: 10px 20px; margin: 5px; border-radius: 5px; cursor: pointer; }
+        .result { background: white; padding: 15px; margin: 10px 0; border-radius: 5px; border-left: 4px solid #007cba; }
+        .error { border-left-color: #e74c3c; background: #fdf2f2; }
+        .success { border-left-color: #27ae60; background: #f2fdf2; }
+    </style>
+</head>
+<body>
+    <h1>🧪 题目生成快速测试</h1>
+    
+    <button class="test-btn" onclick="testEasyQuestion()">测试简单题目</button>
+    <button class="test-btn" onclick="testMediumQuestion()">测试中等题目</button>
+    <button class="test-btn" onclick="testHardQuestion()">测试困难题目</button>
+    <button class="test-btn" onclick="clearResults()">清空结果</button>
+    
+    <div id="results"></div>
+    
+    <!-- 加载必要的脚本 -->
+    <script src="config/gameConfig.js"></script>
+    <script src="config/questionTemplates.js"></script>
+    <script src="js/llmIntegration.js"></script>
+    
+    <script>
+        const results = document.getElementById('results');
+        
+        function addResult(message, type = 'result') {
+            const div = document.createElement('div');
+            div.className = type;
+            div.innerHTML = `<strong>${new Date().toLocaleTimeString()}</strong><br>${message}`;
+            results.appendChild(div);
+        }
+        
+        function clearResults() {
+            results.innerHTML = '';
+        }
+        
+        async function testQuestion(difficulty) {
+            addResult(`🔄 正在测试 ${difficulty} 难度题目生成...`, 'result');
+            
+            try {
+                // 创建 LLMIntegration 实例
+                const llm = new LLMIntegration();
+                
+                // 生成题目
+                const question = await llm.generateQuestion('sequence', difficulty, '奥特曼拯救地球');
+                
+                if (question && question.story && question.question) {
+                    addResult(`✅ ${difficulty} 题目生成成功！<br>
+                        <strong>故事：</strong>${question.story}<br>
+                        <strong>题目：</strong>${question.question}<br>
+                        <strong>选项：</strong>${question.options ? question.options.join(', ') : '无'}<br>
+                        <strong>答案：</strong>${question.correctAnswer || '无'}`, 'success');
+                } else {
+                    addResult(`❌ ${difficulty} 题目生成失败：返回的题目格式不正确`, 'error');
+                }
+            } catch (error) {
+                addResult(`❌ ${difficulty} 题目生成出错：${error.message}`, 'error');
+                console.error(error);
+            }
+        }
+        
+        function testEasyQuestion() {
+            testQuestion('easy');
+        }
+        
+        function testMediumQuestion() {
+            testQuestion('medium');
+        }
+        
+        function testHardQuestion() {
+            testQuestion('hard');
+        }
+        
+        // 页面加载完成后自动测试
+        document.addEventListener('DOMContentLoaded', () => {
+            addResult('📄 页面加载完成，开始自动测试...', 'result');
+            setTimeout(() => {
+                testEasyQuestion();
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

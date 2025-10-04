@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>奥特曼逻辑推理游戏 - 测试页面</title>
+    <style>
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-align: center;
+            padding: 50px 20px;
+            min-height: 100vh;
+            margin: 0;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .test-section {
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 30px;
+            margin: 20px 0;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        .test-button {
+            background: linear-gradient(145deg, #ff6b6b, #ee5a24);
+            border: none;
+            border-radius: 15px;
+            padding: 15px 30px;
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+            margin: 10px;
+        }
+        .test-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 25px rgba(0,0,0,0.3);
+        }
+        .status {
+            margin: 20px 0;
+            padding: 15px;
+            border-radius: 10px;
+            font-weight: 700;
+        }
+        .status.success {
+            background: rgba(46, 204, 113, 0.3);
+            border: 1px solid #2ecc71;
+        }
+        .status.error {
+            background: rgba(231, 76, 60, 0.3);
+            border: 1px solid #e74c3c;
+        }
+        .status.warning {
+            background: rgba(241, 196, 15, 0.3);
+            border: 1px solid #f1c40f;
+        }
+        .file-list {
+            text-align: left;
+            background: rgba(0,0,0,0.2);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        .file-item {
+            margin: 5px 0;
+            padding: 5px 10px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 5px;
+        }
+        .file-item.success {
+            background: rgba(46, 204, 113, 0.2);
+        }
+        .file-item.error {
+            background: rgba(231, 76, 60, 0.2);
+        }
+        .game-link {
+            display: inline-block;
+            background: linear-gradient(145deg, #4ecdc4, #44a08d);
+            color: white;
+            text-decoration: none;
+            padding: 20px 40px;
+            border-radius: 20px;
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin: 20px;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+        .game-link:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🦸‍♂️ 奥特曼逻辑推理游戏</h1>
+        <p style="font-size: 1.2rem; margin-bottom: 40px;">测试页面 - 验证游戏文件完整性</p>
+        
+        <div class="test-section">
+            <h2>📁 文件检查</h2>
+            <div id="file-check-results" class="file-list">
+                <p>正在检查文件...</p>
+            </div>
+            <button class="test-button" onclick="checkFiles()">重新检查文件</button>
+        </div>
+        
+        <div class="test-section">
+            <h2>🔧 功能测试</h2>
+            <div id="function-test-results"></div>
+            <button class="test-button" onclick="testFunctions()">测试游戏功能</button>
+        </div>
+        
+        <div class="test-section">
+            <h2>🎮 游戏启动</h2>
+            <p>如果所有测试都通过，点击下面的按钮启动游戏：</p>
+            <a href="index.html" class="game-link">🚀 启动奥特曼逻辑推理游戏</a>
+        </div>
+        
+        <div class="test-section">
+            <h2>📋 测试结果</h2>
+            <div id="test-summary"></div>
+        </div>
+    </div>
+
+    <script>
+        // 需要检查的文件列表
+        const requiredFiles = [
+            'index.html',
+            'css/main.css',
+            'css/animations.css',
+            'css/responsive.css',
+            'js/main.js',
+            'js/gameEngine.js',
+            'js/questionSystem.js',
+            'js/scoringSystem.js',
+            'js/cardCollection.js',
+            'js/animationEngine.js',
+            'js/llmIntegration.js',
+            'js/resultSummary.js',
+            'config/gameConfig.js',
+            'config/questionTemplates.js'
+        ];
+        
+        let testResults = {
+            files: {},
+            functions: {},
+            overall: 'pending'
+        };
+        
+        // 检查文件是否存在
+        async function checkFiles() {
+            const resultsDiv = document.getElementById('file-check-results');
+            resultsDiv.innerHTML = '<p>正在检查文件...</p>';
+            
+            let html = '';
+            let allFilesExist = true;
+            
+            for (const file of requiredFiles) {
+                try {
+                    const response = await fetch(file, { method: 'HEAD' });
+                    const exists = response.ok;
+                    testResults.files[file] = exists;
+                    
+                    if (exists) {
+                        html += `<div class="file-item success">✅ ${file}</div>`;
+                    } else {
+                        html += `<div class="file-item error">❌ ${file}</div>`;
+                        allFilesExist = false;
+                    }
+                } catch (error) {
+                    html += `<div class="file-item error">❌ ${file} (检查失败)</div>`;
+                    testResults.files[file] = false;
+                    allFilesExist = false;
+                }
+            }
+            
+            resultsDiv.innerHTML = html;
+            
+            if (allFilesExist) {
+                resultsDiv.innerHTML += '<div class="status success">🎉 所有文件检查通过！</div>';
+            } else {
+                resultsDiv.innerHTML += '<div class="status error">⚠️ 部分文件缺失，请检查文件结构</div>';
+            }
+            
+            updateTestSummary();
+        }
+        
+        // 测试游戏功能
+        function testFunctions() {
+            const resultsDiv = document.getElementById('function-test-results');
+            resultsDiv.innerHTML = '<p>正在测试功能...</p>';
+            
+            let html = '';
+            let allFunctionsWork = true;
+            
+            // 测试配置加载
+            try {
+                if (typeof GameConfig !== 'undefined') {
+                    html += '<div class="status success">✅ 游戏配置加载成功</div>';
+                    testResults.functions.config = true;
+                } else {
+                    html += '<div class="status error">❌ 游戏配置加载失败</div>';
+                    testResults.functions.config = false;
+                    allFunctionsWork = false;
+                }
+            } catch (error) {
+                html += '<div class="status error">❌ 游戏配置加载失败</div>';
+                testResults.functions.config = false;
+                allFunctionsWork = false;
+            }
+            
+            // 测试题目模板
+            try {
+                if (typeof QuestionTemplates !== 'undefined') {
+                    html += '<div class="status success">✅ 题目模板加载成功</div>';
+                    testResults.functions.templates = true;
+                } else {
+                    html += '<div class="status error">❌ 题目模板加载失败</div>';
+                    testResults.functions.templates = false;
+                    allFunctionsWork = false;
+                }
+            } catch (error) {
+                html += '<div class="status error">❌ 题目模板加载失败</div>';
+                testResults.functions.templates = false;
+                allFunctionsWork = false;
+            }
+            
+            // 测试本地存储
+            try {
+                localStorage.setItem('test', 'test');
+                localStorage.removeItem('test');
+                html += '<div class="status success">✅ 本地存储功能正常</div>';
+                testResults.functions.storage = true;
+            } catch (error) {
+                html += '<div class="status error">❌ 本地存储功能异常</div>';
+                testResults.functions.storage = false;
+                allFunctionsWork = false;
+            }
+            
+            // 测试动画支持
+            try {
+                const testElement = document.createElement('div');
+                testElement.style.animation = 'test 1s ease';
+                html += '<div class="status success">✅ CSS动画支持正常</div>';
+                testResults.functions.animation = true;
+            } catch (error) {
+                html += '<div class="status error">❌ CSS动画支持异常</div>';
+                testResults.functions.animation = false;
+                allFunctionsWork = false;
+            }
+            
+            if (allFunctionsWork) {
+                html += '<div class="status success">🎉 所有功能测试通过！</div>';
+            } else {
+                html += '<div class="status error">⚠️ 部分功能测试失败</div>';
+            }
+            
+            resultsDiv.innerHTML = html;
+            updateTestSummary();
+        }
+        
+        // 更新测试总结
+        function updateTestSummary() {
+            const summaryDiv = document.getElementById('test-summary');
+            
+            const fileResults = Object.values(testResults.files);
+            const functionResults = Object.values(testResults.functions);
+            
+            const filesPassed = fileResults.filter(r => r).length;
+            const functionsPassed = functionResults.filter(r => r).length;
+            
+            let overallStatus = 'pending';
+            let statusClass = 'warning';
+            let statusText = '测试进行中...';
+            
+            if (fileResults.length > 0 && functionResults.length > 0) {
+                if (filesPassed === fileResults.length && functionsPassed === functionResults.length) {
+                    overallStatus = 'success';
+                    statusClass = 'success';
+                    statusText = '🎉 所有测试通过！游戏可以正常运行';
+                } else {
+                    overallStatus = 'error';
+                    statusClass = 'error';
+                    statusText = '⚠️ 部分测试失败，请检查问题';
+                }
+            }
+            
+            testResults.overall = overallStatus;
+            
+            summaryDiv.innerHTML = `
+                <div class="status ${statusClass}">
+                    <h3>${statusText}</h3>
+                    <p>文件检查: ${filesPassed}/${fileResults.length} 通过</p>
+                    <p>功能测试: ${functionsPassed}/${functionResults.length} 通过</p>
+                </div>
+            `;
+        }
+        
+        // 页面加载时自动检查
+        window.addEventListener('load', () => {
+            checkFiles();
+            setTimeout(testFunctions, 1000);
+        });
+    </script>
+</body>
+</html>

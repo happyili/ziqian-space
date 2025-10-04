@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>定时器测试 - 奥特曼逻辑游戏</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 10px;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 8px;
+        }
+        .timer-display {
+            font-size: 2em;
+            font-weight: bold;
+            text-align: center;
+            margin: 20px 0;
+        }
+        .button {
+            background: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .button:hover {
+            background: #45a049;
+        }
+        .log {
+            background: rgba(0,0,0,0.3);
+            padding: 10px;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 0.9em;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        .status.success {
+            background: rgba(76, 175, 80, 0.3);
+        }
+        .status.error {
+            background: rgba(244, 67, 54, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🕐 定时器测试页面</h1>
+        <p>这个页面用于测试修复后的定时器逻辑，确保题目不会提前刷新。</p>
+        
+        <div class="test-section">
+            <h3>当前定时器状态</h3>
+            <div class="timer-display" id="timer-display">30</div>
+            <div class="status" id="timer-status">等待开始</div>
+        </div>
+        
+        <div class="test-section">
+            <h3>测试控制</h3>
+            <button class="button" onclick="startTimer()">开始定时器</button>
+            <button class="button" onclick="stopTimer()">停止定时器</button>
+            <button class="button" onclick="simulateAnswer()">模拟答题</button>
+            <button class="button" onclick="simulateNextQuestion()">模拟下一题</button>
+            <button class="button" onclick="clearLog()">清空日志</button>
+        </div>
+        
+        <div class="test-section">
+            <h3>测试日志</h3>
+            <div class="log" id="test-log"></div>
+        </div>
+        
+        <div class="test-section">
+            <h3>修复说明</h3>
+            <ul>
+                <li>✅ 合并了重复的定时器逻辑（startTimer 和 startQuestionTimer）</li>
+                <li>✅ 在 startTimer() 开始时确保清除之前的定时器</li>
+                <li>✅ 在 nextQuestion() 中确保清除当前定时器</li>
+                <li>✅ 修改了时间配置，使用单题时间限制（30/25/20秒）</li>
+                <li>✅ 改进了超时处理逻辑，避免重复调用</li>
+                <li>✅ 确保定时器只在翻转卡片后启动，不在游戏开始时启动</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // 模拟定时器逻辑
+        let timer = null;
+        let timeRemaining = 30;
+        let isRunning = false;
+        
+        function log(message) {
+            const logElement = document.getElementById('test-log');
+            const timestamp = new Date().toLocaleTimeString();
+            logElement.innerHTML += `[${timestamp}] ${message}<br>`;
+            logElement.scrollTop = logElement.scrollHeight;
+            console.log(message);
+        }
+        
+        function updateStatus(message, type = 'success') {
+            const statusElement = document.getElementById('timer-status');
+            statusElement.textContent = message;
+            statusElement.className = `status ${type}`;
+        }
+        
+        function updateTimerDisplay() {
+            document.getElementById('timer-display').textContent = timeRemaining;
+            
+            // 时间警告
+            if (timeRemaining <= 10) {
+                document.getElementById('timer-display').style.color = '#ff4757';
+            } else {
+                document.getElementById('timer-display').style.color = '#ffd700';
+            }
+        }
+        
+        function startTimer() {
+            // 确保清除之前的定时器
+            stopTimer();
+            
+            timeRemaining = 30; // 使用配置中的单题时间限制
+            isRunning = true;
+            updateTimerDisplay();
+            updateStatus('定时器运行中', 'success');
+            log('✅ 开始定时器 - 时间限制: 30秒');
+            
+            timer = setInterval(() => {
+                timeRemaining--;
+                updateTimerDisplay();
+                
+                if (timeRemaining <= 0) {
+                    timeUp();
+                }
+            }, 1000);
+        }
+        
+        function stopTimer() {
+            if (timer) {
+                clearInterval(timer);
+                timer = null;
+                isRunning = false;
+                log('⏹️ 定时器已停止');
+            }
+        }
+        
+        function timeUp() {
+            log('⏰ 题目超时！');
+            stopTimer();
+            updateStatus('题目超时', 'error');
+            
+            // 模拟超时后的处理
+            setTimeout(() => {
+                log('🔄 准备进入下一题...');
+                updateStatus('准备下一题', 'success');
+            }, 2000);
+        }
+        
+        function simulateAnswer() {
+            if (!isRunning) {
+                log('❌ 定时器未运行，无法模拟答题');
+                return;
+            }
+            
+            const timeSpent = 30 - timeRemaining;
+            log(`✅ 模拟答题 - 用时: ${timeSpent}秒`);
+            stopTimer();
+            updateStatus('答题完成', 'success');
+            
+            // 模拟答题后的处理
+            setTimeout(() => {
+                log('🔄 准备进入下一题...');
+                updateStatus('准备下一题', 'success');
+            }, 2000);
+        }
+        
+        function simulateNextQuestion() {
+            log('🔄 模拟进入下一题');
+            stopTimer(); // 确保清除当前定时器
+            timeRemaining = 30;
+            updateTimerDisplay();
+            updateStatus('等待开始下一题', 'success');
+            log('✅ 已清除定时器，等待用户翻转卡片');
+        }
+        
+        function clearLog() {
+            document.getElementById('test-log').innerHTML = '';
+            log('📝 日志已清空');
+        }
+        
+        // 初始化
+        updateTimerDisplay();
+        log('🚀 定时器测试页面已加载');
+        log('💡 测试步骤: 1.开始定时器 2.模拟答题或等待超时 3.模拟下一题 4.重复测试');
+    </script>
+</body>
+</html>

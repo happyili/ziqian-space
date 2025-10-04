@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API重试机制测试</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background: #f0f0f0; }
+        .test-btn { background: #007cba; color: white; border: none; padding: 15px 25px; margin: 10px; border-radius: 8px; cursor: pointer; font-size: 1rem; }
+        .test-btn:hover { background: #005a8b; }
+        .test-btn:disabled { background: #ccc; cursor: not-allowed; }
+        .result { background: white; padding: 15px; margin: 10px 0; border-radius: 8px; border-left: 4px solid #007cba; }
+        .error { border-left-color: #e74c3c; background: #fdf2f2; color: #721c24; }
+        .success { border-left-color: #27ae60; background: #f2fdf2; color: #155724; }
+        .warning { border-left-color: #f39c12; background: #fef9e7; color: #856404; }
+        pre { background: #f8f9fa; padding: 10px; border-radius: 5px; overflow-x: auto; font-size: 0.9rem; white-space: pre-wrap; }
+        .status { font-weight: bold; margin-bottom: 10px; }
+        .progress { background: #e9ecef; border-radius: 10px; overflow: hidden; margin: 10px 0; }
+        .progress-bar { background: #007cba; height: 20px; transition: width 0.3s ease; }
+    </style>
+</head>
+<body>
+    <h1>🔄 API重试机制测试</h1>
+    
+    <div class="result">
+        <h3>🛠️ 修复内容</h3>
+        <ul>
+            <li>✅ 添加了指数退避重试机制（429错误）</li>
+            <li>✅ 添加了请求队列管理，避免并发请求</li>
+            <li>✅ 设置了最小请求间隔（1秒）</li>
+            <li>✅ 改进了错误分类和处理</li>
+            <li>✅ 增强了响应数据验证</li>
+        </ul>
+    </div>
+    
+    <div>
+        <button class="test-btn" onclick="testSingleRequest()">单次API调用测试</button>
+        <button class="test-btn" onclick="testMultipleRequests()">多次并发测试</button>
+        <button class="test-btn" onclick="testQueueSystem()">队列系统测试</button>
+        <button class="test-btn" onclick="testFallbackSystem()">备用系统测试</button>
+        <button class="test-btn" onclick="clearResults()">清空结果</button>
+    </div>
+    
+    <div id="progress-container" style="display: none;">
+        <div class="progress">
+            <div id="progress-bar" class="progress-bar" style="width: 0%;"></div>
+        </div>
+        <div id="progress-text">准备中...</div>
+    </div>
+    
+    <div id="results"></div>
+    
+    <!-- 加载脚本 -->
+    <script src="config/gameConfig.js"></script>
+    <script src="config/questionTemplates.js"></script>
+    <script src="js/llmIntegration.js"></script>
+    
+    <script>
+        const results = document.getElementById('results');
+        const progressContainer = document.getElementById('progress-container');
+        const progressBar = document.getElementById('progress-bar');
+        const progressText = document.getElementById('progress-text');
+        
+        function addResult(title, content, type = 'result') {
+            const div = document.createElement('div');
+            div.className = type;
+            div.innerHTML = `
+                <div class="status">${title}</div>
+                <pre>${content}</pre>
+            `;
+            results.appendChild(div);
+        }
+        
+        function clearResults() {
+            results.innerHTML = '';
+            hideProgress();
+        }
+        
+        function showProgress() {
+            progressContainer.style.display = 'block';
+            progressBar.style.width = '0%';
+            progressText.textContent = '准备中...';
+        }
+        
+        function updateProgress(percent, text) {
+            progressBar.style.width = percent + '%';
+            progressText.textContent = text;
+        }
+        
+        function hideProgress() {
+            progressContainer.style.display = 'none';
+        }
+        
+        async function testSingleRequest() {
+            addResult('🔄 单次API调用测试', '测试基本的API调用和错误处理...', 'result');
+            
+            try {
+                const llm = new LLMIntegration();
+                const startTime = Date.now();
+                
+                const question = await llm.generateQuestion('sequence', 'easy', '奥特曼拯救地球');
+                const endTime = Date.now();
+                
+                if (question && question.story && question.question) {
+                    addResult('✅ API调用成功', 
+                        `耗时: ${endTime - startTime}ms\n` +
+                        `故事: ${question.story.substring(0, 50)}...\n` +
+                        `题目: ${question.question.substring(0, 50)}...`, 'success');
+                } else {
+                    addResult('⚠️ 使用备用题目', 
+                        `API可能失败，使用了备用题目\n` +
+                        `耗时: ${endTime - startTime}ms\n` +
+                        `故事: ${question.story}`, 'warning');
+                }
+            } catch (error) {
+                addResult('❌ 测试失败', error.message, 'error');
+            }
+        }
+        
+        async function testMultipleRequests() {
+            addResult('🚀 多次并发测试', '同时发送5个API请求，测试队列和重试机制...', 'result');
+            showProgress();
+            
+            const requests = [];
+            const llm = new LLMIntegration();
+            const startTime = Date.now();
+            
+            for (let i = 0; i < 5; i++) {
+                requests.push(
+                    llm.generateQuestion('sequence', 'easy', `测试主题${i+1}`)
+                        .then(result => ({ index: i+1, result, success: true }))
+                        .catch(error => ({ index: i+1, error: error.message, success: false }))
+                );
+            }
+            
+            const results_data = [];
+            for (let i = 0; i < requests.length; i++) {
+                updateProgress((i / requests.length) * 50, `等待请求 ${i+1}/${requests.length}...`);
+                const result = await requests[i];
+                results_data.push(result);
+                updateProgress(50 + (i / requests.length) * 50, `完成请求 ${i+1}/${requests.length}`);
+            }
+            
+            const endTime = Date.now();
+            hideProgress();
+            
+            let successCount = 0;
+            let fallbackCount = 0;
+            let errorCount = 0;
+            
+            results_data.forEach(result => {
+                if (result.success) {
+                    if (result.result && result.result.story && result.result.story.includes('奥特曼发现')) {
+                        fallbackCount++;
+                    } else {
+                        successCount++;
+                    }
+                } else {
+                    errorCount++;
+                }
+            });
+            
+            addResult('📊 并发测试结果', 
+                `总耗时: ${endTime - startTime}ms\n` +
+                `成功请求: ${successCount}\n` +
+                `备用题目: ${fallbackCount}\n` +
+                `错误请求: ${errorCount}\n` +
+                `平均耗时: ${Math.round((endTime - startTime) / 5)}ms`, 
+                successCount > 0 ? 'success' : (fallbackCount > 0 ? 'warning' : 'error'));
+        }
+        
+        async function testQueueSystem() {
+            addResult('⏳ 队列系统测试', '测试请求队列的顺序处理和间隔控制...', 'result');
+            
+            try {
+                const llm = new LLMIntegration();
+                const timestamps = [];
+                
+                // 记录队列状态
+                const originalProcessQueue = llm.processQueue;
+                llm.processQueue = async function() {
+                    timestamps.push(Date.now());
+                    return originalProcessQueue.call(this);
+                };
+                
+                // 快速提交3个请求
+                const promise1 = llm.generateQuestion('sequence', 'easy', '队列测试1');
+                const promise2 = llm.generateQuestion('pattern', 'easy', '队列测试2');
+                const promise3 = llm.generateQuestion('comparison', 'easy', '队列测试3');
+                
+                await Promise.all([promise1, promise2, promise3]);
+                
+                // 分析时间间隔
+                let intervals = '';
+                for (let i = 1; i < timestamps.length; i++) {
+                    const interval = timestamps[i] - timestamps[i-1];
+                    intervals += `请求${i+1}间隔: ${interval}ms\n`;
+                }
+                
+                addResult('✅ 队列系统测试', 
+                    `处理了${timestamps.length}个请求\n${intervals}`, 'success');
+                    
+            } catch (error) {
+                addResult('❌ 队列测试失败', error.message, 'error');
+            }
+        }
+        
+        async function testFallbackSystem() {
+            addResult('🛡️ 备用系统测试', '测试当API完全不可用时的备用题目系统...', 'result');
+            
+            try {
+                const llm = new LLMIntegration();
+                
+                // 临时禁用API调用来测试备用系统
+                const originalQueuedAPICall = llm.queuedAPICall;
+                llm.queuedAPICall = async function(prompt) {
+                    throw new Error('模拟API不可用');
+                };
+                
+                const question = await llm.generateQuestion('sequence', 'easy', '备用测试');
+                
+                if (question && question.story && question.question) {
+                    addResult('✅ 备用系统正常', 
+                        `成功生成备用题目:\n` +
+                        `故事: ${question.story}\n` +
+                        `题目: ${question.question}\n` +
+                        `选项: ${question.options.join(', ')}\n` +
+                        `答案: ${question.correctAnswer}`, 'success');
+                } else {
+                    addResult('❌ 备用系统失败', '备用题目格式不正确', 'error');
+                }
+                
+                // 恢复原始方法
+                llm.queuedAPICall = originalQueuedAPICall;
+                
+            } catch (error) {
+                addResult('❌ 备用系统测试失败', error.message, 'error');
+            }
+        }
+        
+        // 页面加载后自动运行基础测试
+        document.addEventListener('DOMContentLoaded', () => {
+            addResult('📄 页面加载完成', '可以开始测试API重试机制...', 'result');
+        });
+    </script>
+</body>
+</html>

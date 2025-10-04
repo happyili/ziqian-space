@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>最终测试 - difficultyAdjustments 修复</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background: #f0f0f0; }
+        .test-btn { background: #007cba; color: white; border: none; padding: 15px 25px; margin: 10px; border-radius: 8px; cursor: pointer; font-size: 1rem; }
+        .test-btn:hover { background: #005a8b; }
+        .result { background: white; padding: 15px; margin: 10px 0; border-radius: 8px; border-left: 4px solid #007cba; }
+        .error { border-left-color: #e74c3c; background: #fdf2f2; color: #721c24; }
+        .success { border-left-color: #27ae60; background: #f2fdf2; color: #155724; }
+        .warning { border-left-color: #f39c12; background: #fef9e7; color: #856404; }
+        pre { background: #f8f9fa; padding: 10px; border-radius: 5px; overflow-x: auto; font-size: 0.9rem; }
+        .status { font-weight: bold; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+    <h1>🔧 difficultyAdjustments 修复验证</h1>
+    
+    <div>
+        <button class="test-btn" onclick="testQuestionTemplatesLoading()">测试 QuestionTemplates 加载</button>
+        <button class="test-btn" onclick="testQuestionGeneration()">测试题目生成</button>
+        <button class="test-btn" onclick="testAllDifficulties()">测试所有难度</button>
+        <button class="test-btn" onclick="clearResults()">清空结果</button>
+    </div>
+    
+    <div id="results"></div>
+    
+    <!-- 加载脚本 -->
+    <script src="config/questionTemplates.js"></script>
+    <script src="config/gameConfig.js"></script>
+    <script src="js/llmIntegration.js"></script>
+    
+    <script>
+        const results = document.getElementById('results');
+        
+        function addResult(title, content, type = 'result') {
+            const div = document.createElement('div');
+            div.className = type;
+            div.innerHTML = `
+                <div class="status">${title}</div>
+                <pre>${content}</pre>
+            `;
+            results.appendChild(div);
+        }
+        
+        function clearResults() {
+            results.innerHTML = '';
+        }
+        
+        function testQuestionTemplatesLoading() {
+            addResult('🔍 检查 QuestionTemplates 加载状态', '', 'result');
+            
+            if (typeof QuestionTemplates === 'undefined') {
+                addResult('❌ 错误', 'QuestionTemplates 未定义', 'error');
+                return false;
+            }
+            
+            // 检查关键属性
+            const requiredProps = ['logicTypes', 'storyThemes', 'difficultyAdjustments', 'hintTemplates', 'llmPrompts'];
+            let allGood = true;
+            
+            requiredProps.forEach(prop => {
+                if (!QuestionTemplates[prop]) {
+                    addResult(`❌ 缺失属性`, `QuestionTemplates.${prop} 未定义`, 'error');
+                    allGood = false;
+                } else {
+                    addResult(`✅ 属性存在`, `QuestionTemplates.${prop} 已定义`, 'success');
+                }
+            });
+            
+            // 特别检查 difficultyAdjustments
+            if (QuestionTemplates.difficultyAdjustments) {
+                const difficulties = ['easy', 'medium', 'hard'];
+                difficulties.forEach(diff => {
+                    if (QuestionTemplates.difficultyAdjustments[diff]) {
+                        addResult(`✅ 难度配置`, `${diff}: ${JSON.stringify(QuestionTemplates.difficultyAdjustments[diff])}`, 'success');
+                    } else {
+                        addResult(`❌ 难度配置`, `${diff} 配置缺失`, 'error');
+                        allGood = false;
+                    }
+                });
+            }
+            
+            return allGood;
+        }
+        
+        function testQuestionGeneration() {
+            addResult('🧪 测试题目生成流程', '', 'result');
+            
+            if (!testQuestionTemplatesLoading()) {
+                addResult('⚠️ 警告', '由于 QuestionTemplates 加载问题，跳过题目生成测试', 'warning');
+                return;
+            }
+            
+            try {
+                const questionSystem = new QuestionSystem();
+                addResult('✅ QuestionSystem 实例', '创建成功', 'success');
+                
+                // 测试 selectQuestionType
+                const questionType = questionSystem.selectQuestionType('easy', 1);
+                addResult('✅ selectQuestionType', `返回类型: ${questionType}`, 'success');
+                
+                // 测试 selectTheme  
+                const theme = questionSystem.selectTheme();
+                addResult('✅ selectTheme', `返回主题: ${theme}`, 'success');
+                
+                addResult('🎉 成功', '所有基础功能测试通过！', 'success');
+                
+            } catch (error) {
+                addResult('❌ 错误', `题目生成测试失败: ${error.message}`, 'error');
+                console.error(error);
+            }
+        }
+        
+        async function testAllDifficulties() {
+            addResult('🔄 测试所有难度的题目生成', '', 'result');
+            
+            const difficulties = ['easy', 'medium', 'hard'];
+            
+            for (const difficulty of difficulties) {
+                try {
+                    const questionSystem = new QuestionSystem();
+                    
+                    // 测试 selectQuestionType
+                    const questionType = questionSystem.selectQuestionType(difficulty, 1);
+                    addResult(`✅ ${difficulty} 难度`, `题目类型: ${questionType}`, 'success');
+                    
+                    // 尝试生成完整题目（会使用备用题目）
+                    const question = await questionSystem.generateQuestion(difficulty, 1);
+                    
+                    if (question && question.story && question.question) {
+                        addResult(`✅ ${difficulty} 题目`, `故事: ${question.story.substring(0, 50)}...`, 'success');
+                    } else {
+                        addResult(`⚠️ ${difficulty} 题目`, '生成了题目但格式可能不完整', 'warning');
+                    }
+                    
+                } catch (error) {
+                    addResult(`❌ ${difficulty} 错误`, error.message, 'error');
+                }
+            }
+            
+            addResult('🎉 完成', '所有难度测试完成', 'success');
+        }
+        
+        // 页面加载后自动运行基础测试
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                addResult('📄 自动测试', '页面加载完成，开始自动测试...', 'result');
+                testQuestionTemplatesLoading();
+            }, 500);
+        });
+    </script>
+</body>
+</html>

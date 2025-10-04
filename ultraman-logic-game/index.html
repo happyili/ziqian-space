@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>奥特曼逻辑推理大冒险</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/animations.css">
+    <link rel="stylesheet" href="css/responsive.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;700;900&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- 游戏主容器 -->
+    <div id="game-container">
+        <!-- 开始界面 -->
+        <div id="start-screen" class="screen active">
+            <div class="ultraman-logo">
+                <h1>🦸‍♂️ 奥特曼逻辑推理大冒险</h1>
+                <p class="subtitle">挑战你的记忆力和逻辑思维！</p>
+            </div>
+            
+            <div class="game-type-selection">
+                <h2>选择游戏类型</h2>
+                <div class="game-type-buttons">
+                    <button class="game-type-btn active" data-type="all">
+                        <span class="type-icon">🎯</span>
+                        <span class="type-name">全部类型</span>
+                        <span class="type-desc">包含所有逻辑推理类型</span>
+                    </button>
+                    <button class="game-type-btn" data-type="sequence">
+                        <span class="type-icon">🔢</span>
+                        <span class="type-name">序列推理</span>
+                        <span class="type-desc">数字和图案序列</span>
+                    </button>
+                    <button class="game-type-btn" data-type="pattern">
+                        <span class="type-icon">🔍</span>
+                        <span class="type-name">模式识别</span>
+                        <span class="type-desc">寻找规律和模式</span>
+                    </button>
+                    <button class="game-type-btn" data-type="comparison">
+                        <span class="type-icon">⚖️</span>
+                        <span class="type-name">比较推理</span>
+                        <span class="type-desc">比较和分析</span>
+                    </button>
+                    <button class="game-type-btn" data-type="categorization">
+                        <span class="type-icon">📂</span>
+                        <span class="type-name">分类推理</span>
+                        <span class="type-desc">物品分类整理</span>
+                    </button>
+                    <button class="game-type-btn" data-type="cause_effect">
+                        <span class="type-icon">🔗</span>
+                        <span class="type-name">因果关系</span>
+                        <span class="type-desc">分析事件关联</span>
+                    </button>
+                    <button class="game-type-btn" data-type="deduction">
+                        <span class="type-icon">🧠</span>
+                        <span class="type-name">演绎推理</span>
+                        <span class="type-desc">逻辑推导</span>
+                    </button>
+                    <button class="game-type-btn" data-type="math_olympiad">
+                        <span class="type-icon">🎓</span>
+                        <span class="type-name">奥数综合题</span>
+                        <span class="type-desc">数学奥数挑战</span>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="difficulty-selection">
+                <h2>选择难度等级</h2>
+                <div class="difficulty-buttons">
+                    <button class="difficulty-btn" data-level="easy">
+                        <span class="level-icon">🌟</span>
+                        <span class="level-name">初级探险</span>
+                        <span class="level-desc">适合初学者</span>
+                    </button>
+                    <button class="difficulty-btn" data-level="medium">
+                        <span class="level-icon">⭐</span>
+                        <span class="level-name">中级挑战</span>
+                        <span class="level-desc">有一定基础</span>
+                    </button>
+                    <button class="difficulty-btn" data-level="hard">
+                        <span class="level-icon">💫</span>
+                        <span class="level-name">高级大师</span>
+                        <span class="level-desc">逻辑高手</span>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="game-info">
+                <div class="info-card">
+                    <h3>🎯 游戏目标</h3>
+                    <p>通过逻辑推理题目，收集奥特曼卡片，挑战更高分数！</p>
+                </div>
+                <div class="info-card">
+                    <h3>⏱️ 计时挑战</h3>
+                    <p>每道题都有时间限制，快速思考获得更高分数！</p>
+                </div>
+                <div class="info-card">
+                    <h3>🎴 卡片收集</h3>
+                    <p>答对题目获得珍贵的奥特曼卡片，建立你的收藏！</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 游戏界面 -->
+        <div id="game-screen" class="screen">
+            <!-- 游戏头部信息 -->
+            <div class="game-header">
+                <div class="player-info">
+                    <div class="score-display">
+                        <span class="label">分数:</span>
+                        <span id="current-score">0</span>
+                    </div>
+                    <div class="timer-display">
+                        <span class="label">时间:</span>
+                        <span id="timer">30</span>
+                    </div>
+                    <div class="level-display">
+                        <span class="label">关卡:</span>
+                        <span id="current-level">1</span>
+                    </div>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progress-fill"></div>
+                </div>
+            </div>
+
+            <!-- 奥特曼角色区域 -->
+            <div class="character-area">
+                <div class="ultraman-character" id="ultraman-character">
+                    <div class="ultraman-body">🦸‍♂️</div>
+                    <div class="ultraman-eyes"></div>
+                    <div class="energy-ring"></div>
+                </div>
+                <div class="battle-effects" id="battle-effects"></div>
+            </div>
+
+            <!-- 题目显示区域 -->
+            <div class="question-area">
+                <div class="monster-card" id="monster-card">
+                    <div class="card-front">
+                        <div class="monster-image" id="monster-image">👹</div>
+                        <div class="story-text" id="story-text">
+                            加载题目中...
+                        </div>
+                    </div>
+                    <div class="card-back">
+                        <div class="question-text" id="question-text"></div>
+                        <div class="answer-options" id="answer-options"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 操作按钮区域 -->
+            <div class="action-area">
+                <button id="flip-card-btn" class="action-btn">翻开卡片</button>
+                <button id="hint-btn" class="action-btn hint-btn">💡 提示</button>
+                <button id="skip-btn" class="action-btn skip-btn">跳过</button>
+            </div>
+
+            <!-- 卡片收集展示 -->
+            <div class="card-collection-preview">
+                <h3>已收集卡片</h3>
+                <div class="collected-cards" id="collected-cards"></div>
+            </div>
+        </div>
+
+        <!-- 结果界面 -->
+        <div id="result-screen" class="screen">
+            <div class="result-content">
+                <h1>🎉 探险完成！</h1>
+                
+                <div class="final-stats">
+                    <div class="stat-item">
+                        <span class="stat-label">最终分数</span>
+                        <span class="stat-value" id="final-score">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">收集卡片</span>
+                        <span class="stat-value" id="final-cards">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">平均用时</span>
+                        <span class="stat-value" id="avg-time">0s</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">正确率</span>
+                        <span class="stat-value" id="accuracy">0%</span>
+                    </div>
+                </div>
+
+                <div class="ability-analysis">
+                    <h2>🧠 能力分析报告</h2>
+                    <div class="analysis-content" id="analysis-content">
+                        正在生成分析报告...
+                    </div>
+                </div>
+
+                <div class="card-showcase">
+                    <h2>🎴 奥特曼卡片收藏墙</h2>
+                    <div class="card-wall" id="card-wall"></div>
+                </div>
+
+                <div class="result-actions">
+                    <button id="play-again-btn" class="action-btn primary">再次挑战</button>
+                    <button id="change-difficulty-btn" class="action-btn secondary">更换难度</button>
+                    <button id="share-result-btn" class="action-btn secondary">分享成绩</button>
+                    <button id="api-settings-btn" class="action-btn secondary">API设置</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 加载界面 -->
+        <div id="loading-screen" class="screen">
+            <div class="loading-content">
+                <div class="loading-spinner"></div>
+                <p>正在生成题目...</p>
+                <div class="loading-progress">
+                    <div class="loading-progress-bar"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 提示弹窗 -->
+    <div id="hint-modal" class="modal">
+        <div class="modal-content">
+            <h3>💡 提示</h3>
+            <p id="hint-text"></p>
+            <button id="close-hint-btn" class="action-btn">知道了</button>
+        </div>
+    </div>
+
+    <!-- API设置弹窗 -->
+    <div id="api-settings-modal" class="modal">
+        <div class="modal-content">
+            <h3>🔧 API设置</h3>
+            <p>配置OpenRouter API密钥以启用AI智能题目生成功能：</p>
+            <div style="margin: 20px 0;">
+                <label for="api-key-input" style="display: block; margin-bottom: 10px;">API密钥：</label>
+                <input type="password" id="api-key-input" placeholder="sk-or-v1-..." style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+            </div>
+            <p style="font-size: 0.9rem; color: #666; margin: 10px 0;">
+                如果不设置API密钥，游戏将使用预设的备用题目。<br>
+                获取API密钥：<a href="https://openrouter.ai" target="_blank">https://openrouter.ai</a>
+            </p>
+            <div style="text-align: right; margin-top: 20px;">
+                <button id="save-api-key-btn" class="action-btn primary">保存</button>
+                <button id="cancel-api-settings-btn" class="action-btn secondary">取消</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 音效控制 -->
+    <audio id="bg-music" loop>
+        <source src="assets/sounds/bg-music.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="card-flip-sound">
+        <source src="assets/sounds/card-flip.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="correct-sound">
+        <source src="assets/sounds/correct.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="wrong-sound">
+        <source src="assets/sounds/wrong.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- JavaScript 模块 -->
+    <script src="config/gameConfig.js"></script>
+    <script src="config/questionTemplates.js"></script>
+    <script src="js/scoringSystem.js"></script>
+    <script src="js/cardCollection.js"></script>
+    <script src="js/animationEngine.js"></script>
+    <script src="js/llmIntegration.js"></script>
+    <script src="js/questionSystem.js"></script>
+    <script src="js/resultSummary.js"></script>
+    <script src="js/gameEngine.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,794 @@
+/* 奥特曼逻辑推理游戏 - 响应式设计样式 */
+
+/* 平板设备 (768px - 1024px) */
+@media (max-width: 1024px) {
+    .ultraman-logo h1 {
+        font-size: 2.5rem;
+    }
+    
+    .difficulty-buttons {
+        gap: 15px;
+    }
+    
+    .difficulty-btn {
+        padding: 25px 35px;
+        min-width: 180px;
+    }
+    
+    .game-type-buttons {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+    }
+    
+    .game-type-btn {
+        padding: 18px 12px;
+    }
+    
+    .game-info {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+    }
+    
+    .monster-card {
+        width: 380px;
+        height: 280px;
+    }
+    
+    .ultraman-character {
+        width: 110px;
+        height: 110px;
+        font-size: 2.8rem;
+    }
+}
+
+/* 手机设备 (480px - 768px) */
+@media (max-width: 768px) {
+    body {
+        font-size: 14px;
+    }
+    
+    .screen {
+        padding: 15px;
+    }
+    
+    /* 开始界面 */
+    .ultraman-logo h1 {
+        font-size: 2rem;
+        margin-bottom: 8px;
+    }
+    
+    .subtitle {
+        font-size: 1rem;
+        margin-bottom: 30px;
+    }
+    
+    .difficulty-selection h2 {
+        font-size: 1.5rem;
+        margin-bottom: 20px;
+    }
+    
+    .game-type-selection h2 {
+        font-size: 1.5rem;
+        margin-bottom: 20px;
+    }
+    
+    .game-type-buttons {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+    
+    .game-type-btn {
+        padding: 15px 10px;
+        font-size: 0.9rem;
+    }
+    
+    .type-icon {
+        font-size: 1.5rem;
+        margin-bottom: 6px;
+    }
+    
+    .type-name {
+        font-size: 1rem;
+        margin-bottom: 4px;
+    }
+    
+    .type-desc {
+        font-size: 0.75rem;
+    }
+    
+    .difficulty-buttons {
+        flex-direction: column;
+        align-items: center;
+        gap: 15px;
+    }
+    
+    .difficulty-btn {
+        padding: 20px 30px;
+        min-width: 250px;
+        font-size: 1rem;
+    }
+    
+    .level-icon {
+        font-size: 1.5rem;
+        margin-bottom: 8px;
+    }
+    
+    .level-name {
+        font-size: 1.1rem;
+        margin-bottom: 4px;
+    }
+    
+    .level-desc {
+        font-size: 0.8rem;
+    }
+    
+    .game-info {
+        grid-template-columns: 1fr;
+        gap: 15px;
+        max-width: 100%;
+    }
+    
+    .info-card {
+        padding: 15px;
+    }
+    
+    .info-card h3 {
+        font-size: 1.1rem;
+        margin-bottom: 8px;
+    }
+    
+    .info-card p {
+        font-size: 0.9rem;
+    }
+    
+    /* 游戏界面 */
+    .game-header {
+        padding: 10px 15px;
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .player-info {
+        flex-direction: row;
+        gap: 20px;
+        justify-content: center;
+    }
+    
+    .score-display, .timer-display, .level-display {
+        font-size: 1rem;
+        gap: 8px;
+    }
+    
+    .progress-bar {
+        width: 150px;
+        height: 6px;
+    }
+    
+    .character-area {
+        margin: 80px 0 30px;
+    }
+    
+    .ultraman-character {
+        width: 100px;
+        height: 100px;
+        font-size: 2.5rem;
+    }
+    
+    .ultraman-eyes {
+        top: 25px;
+        width: 18px;
+        height: 18px;
+    }
+    
+    .question-area {
+        margin: 30px 0;
+    }
+    
+    .monster-card {
+        width: 350px;
+        height: 250px;
+    }
+    
+    .monster-image {
+        font-size: 3.5rem;
+        margin-bottom: 15px;
+    }
+    
+    .story-text {
+        font-size: 1rem;
+        line-height: 1.5;
+        max-height: 150px;
+    }
+    
+    .question-text {
+        font-size: 1.1rem;
+        margin-bottom: 25px;
+    }
+    
+    .answer-options {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+    
+    .option-btn {
+        padding: 12px;
+        font-size: 0.9rem;
+    }
+    
+    .action-area {
+        flex-direction: column;
+        gap: 15px;
+        margin: 25px 0;
+    }
+    
+    .action-btn {
+        padding: 12px 25px;
+        font-size: 0.9rem;
+        width: 200px;
+    }
+    
+    .card-collection-preview {
+        position: relative;
+        bottom: auto;
+        right: auto;
+        margin: 20px 0;
+        max-width: 100%;
+    }
+    
+    /* 结果界面 */
+    .result-content h1 {
+        font-size: 2.5rem;
+        margin-bottom: 30px;
+    }
+    
+    .final-stats {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+        margin-bottom: 30px;
+    }
+    
+    .stat-item {
+        padding: 15px;
+    }
+    
+    .stat-label {
+        font-size: 0.9rem;
+        margin-bottom: 8px;
+    }
+    
+    .stat-value {
+        font-size: 1.5rem;
+    }
+    
+    .ability-analysis {
+        padding: 20px;
+        margin-bottom: 30px;
+    }
+    
+    .ability-analysis h2 {
+        font-size: 1.5rem;
+        margin-bottom: 15px;
+    }
+    
+    .analysis-content {
+        font-size: 1rem;
+        line-height: 1.5;
+    }
+    
+    .card-showcase h2 {
+        font-size: 1.5rem;
+        margin-bottom: 15px;
+    }
+    
+    .card-wall {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+    }
+    
+    .card {
+        padding: 15px;
+    }
+    
+    .card-header {
+        margin-bottom: 10px;
+    }
+    
+    .card-emoji {
+        font-size: 1.5rem;
+    }
+    
+    .card-rarity {
+        font-size: 0.7rem;
+        padding: 4px 8px;
+    }
+    
+    .card-name {
+        font-size: 1rem;
+        margin-bottom: 8px;
+    }
+    
+    .card-description {
+        font-size: 0.8rem;
+        margin-bottom: 10px;
+    }
+    
+    .card-score {
+        font-size: 0.9rem;
+    }
+    
+    .card-date {
+        font-size: 0.7rem;
+    }
+    
+    .result-actions {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .action-btn {
+        width: 250px;
+    }
+}
+
+/* 小屏手机设备 (320px - 480px) */
+@media (max-width: 480px) {
+    body {
+        font-size: 13px;
+    }
+    
+    .screen {
+        padding: 10px;
+    }
+    
+    /* 开始界面 */
+    .ultraman-logo h1 {
+        font-size: 1.5rem;
+        margin-bottom: 6px;
+    }
+    
+    .subtitle {
+        font-size: 0.9rem;
+        margin-bottom: 25px;
+    }
+    
+    .difficulty-selection h2 {
+        font-size: 1.3rem;
+        margin-bottom: 15px;
+    }
+    
+    .game-type-selection h2 {
+        font-size: 1.3rem;
+        margin-bottom: 15px;
+    }
+    
+    .game-type-buttons {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+    
+    .game-type-btn {
+        padding: 12px 8px;
+        font-size: 0.85rem;
+    }
+    
+    .type-icon {
+        font-size: 1.3rem;
+        margin-bottom: 4px;
+    }
+    
+    .type-name {
+        font-size: 0.9rem;
+        margin-bottom: 3px;
+    }
+    
+    .type-desc {
+        font-size: 0.7rem;
+    }
+    
+    .difficulty-btn {
+        padding: 15px 25px;
+        min-width: 200px;
+        font-size: 0.9rem;
+    }
+    
+    .level-icon {
+        font-size: 1.3rem;
+        margin-bottom: 6px;
+    }
+    
+    .level-name {
+        font-size: 1rem;
+        margin-bottom: 3px;
+    }
+    
+    .level-desc {
+        font-size: 0.7rem;
+    }
+    
+    .info-card {
+        padding: 12px;
+    }
+    
+    .info-card h3 {
+        font-size: 1rem;
+        margin-bottom: 6px;
+    }
+    
+    .info-card p {
+        font-size: 0.8rem;
+    }
+    
+    /* 游戏界面 */
+    .game-header {
+        padding: 8px 10px;
+    }
+    
+    .player-info {
+        gap: 15px;
+    }
+    
+    .score-display, .timer-display, .level-display {
+        font-size: 0.9rem;
+        gap: 6px;
+    }
+    
+    .progress-bar {
+        width: 120px;
+        height: 5px;
+    }
+    
+    .character-area {
+        margin: 70px 0 25px;
+    }
+    
+    .ultraman-character {
+        width: 90px;
+        height: 90px;
+        font-size: 2.2rem;
+    }
+    
+    .ultraman-eyes {
+        top: 22px;
+        width: 16px;
+        height: 16px;
+    }
+    
+    .monster-card {
+        width: 300px;
+        height: 200px;
+    }
+    
+    .monster-image {
+        font-size: 3rem;
+        margin-bottom: 12px;
+    }
+    
+    .story-text {
+        font-size: 0.9rem;
+        line-height: 1.4;
+        max-height: 120px;
+    }
+    
+    .question-text {
+        font-size: 1rem;
+        margin-bottom: 20px;
+    }
+    
+    .option-btn {
+        padding: 10px;
+        font-size: 0.8rem;
+    }
+    
+    .action-btn {
+        padding: 10px 20px;
+        font-size: 0.8rem;
+        width: 180px;
+    }
+    
+    /* 结果界面 */
+    .result-content h1 {
+        font-size: 2rem;
+        margin-bottom: 25px;
+    }
+    
+    .final-stats {
+        grid-template-columns: 1fr;
+        gap: 12px;
+        margin-bottom: 25px;
+    }
+    
+    .stat-item {
+        padding: 12px;
+    }
+    
+    .stat-label {
+        font-size: 0.8rem;
+        margin-bottom: 6px;
+    }
+    
+    .stat-value {
+        font-size: 1.3rem;
+    }
+    
+    .ability-analysis {
+        padding: 15px;
+        margin-bottom: 25px;
+    }
+    
+    .ability-analysis h2 {
+        font-size: 1.3rem;
+        margin-bottom: 12px;
+    }
+    
+    .analysis-content {
+        font-size: 0.9rem;
+        line-height: 1.4;
+    }
+    
+    .card-showcase h2 {
+        font-size: 1.3rem;
+        margin-bottom: 12px;
+    }
+    
+    .card-wall {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+    
+    .card {
+        padding: 12px;
+    }
+    
+    .card-emoji {
+        font-size: 1.3rem;
+    }
+    
+    .card-name {
+        font-size: 0.9rem;
+        margin-bottom: 6px;
+    }
+    
+    .card-description {
+        font-size: 0.7rem;
+        margin-bottom: 8px;
+    }
+    
+    .action-btn {
+        width: 200px;
+    }
+}
+
+/* 超小屏设备 (小于320px) */
+@media (max-width: 320px) {
+    .ultraman-logo h1 {
+        font-size: 1.3rem;
+    }
+    
+    .difficulty-btn {
+        min-width: 180px;
+        padding: 12px 20px;
+    }
+    
+    .monster-card {
+        width: 280px;
+        height: 180px;
+    }
+    
+    .ultraman-character {
+        width: 80px;
+        height: 80px;
+        font-size: 2rem;
+    }
+    
+    .monster-image {
+        font-size: 2.5rem;
+    }
+    
+    .story-text {
+        font-size: 0.8rem;
+        max-height: 100px;
+    }
+    
+    .question-text {
+        font-size: 0.9rem;
+    }
+    
+    .option-btn {
+        padding: 8px;
+        font-size: 0.7rem;
+    }
+    
+    .action-btn {
+        width: 160px;
+        padding: 8px 15px;
+        font-size: 0.7rem;
+    }
+}
+
+/* 横屏模式 */
+@media (orientation: landscape) and (max-height: 500px) {
+    .screen {
+        padding: 10px;
+    }
+    
+    .ultraman-logo h1 {
+        font-size: 1.5rem;
+        margin-bottom: 5px;
+    }
+    
+    .subtitle {
+        font-size: 0.8rem;
+        margin-bottom: 15px;
+    }
+    
+    .difficulty-buttons {
+        flex-direction: row;
+        gap: 10px;
+    }
+    
+    .difficulty-btn {
+        padding: 10px 15px;
+        min-width: 120px;
+        font-size: 0.8rem;
+    }
+    
+    .level-icon {
+        font-size: 1rem;
+        margin-bottom: 3px;
+    }
+    
+    .level-name {
+        font-size: 0.9rem;
+        margin-bottom: 2px;
+    }
+    
+    .level-desc {
+        font-size: 0.6rem;
+    }
+    
+    .game-info {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+    }
+    
+    .info-card {
+        padding: 8px;
+    }
+    
+    .info-card h3 {
+        font-size: 0.8rem;
+        margin-bottom: 3px;
+    }
+    
+    .info-card p {
+        font-size: 0.7rem;
+    }
+    
+    .character-area {
+        margin: 50px 0 20px;
+    }
+    
+    .ultraman-character {
+        width: 80px;
+        height: 80px;
+        font-size: 2rem;
+    }
+    
+    .monster-card {
+        width: 300px;
+        height: 150px;
+    }
+    
+    .monster-image {
+        font-size: 2.5rem;
+        margin-bottom: 8px;
+    }
+    
+    .story-text {
+        font-size: 0.8rem;
+        max-height: 80px;
+    }
+    
+    .question-text {
+        font-size: 0.9rem;
+        margin-bottom: 15px;
+    }
+    
+    .answer-options {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+    }
+    
+    .option-btn {
+        padding: 8px;
+        font-size: 0.7rem;
+    }
+    
+    .action-area {
+        flex-direction: row;
+        gap: 10px;
+        margin: 15px 0;
+    }
+    
+    .action-btn {
+        padding: 8px 15px;
+        font-size: 0.7rem;
+        width: auto;
+    }
+}
+
+/* 高分辨率设备 */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    .ultraman-character {
+        box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+    }
+    
+    .monster-card {
+        box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+    }
+    
+    .difficulty-btn {
+        box-shadow: 0 12px 25px rgba(0,0,0,0.3);
+    }
+}
+
+/* 打印样式 */
+@media print {
+    .screen {
+        display: none !important;
+    }
+    
+    #result-screen {
+        display: flex !important;
+        background: white !important;
+        color: black !important;
+    }
+    
+    .result-content {
+        max-width: none !important;
+    }
+    
+    .action-btn {
+        display: none !important;
+    }
+}
+
+/* 无障碍支持 */
+@media (prefers-reduced-motion: reduce) {
+    .ultraman-character,
+    .monster-card,
+    .option-btn,
+    .difficulty-btn,
+    .energy-ring,
+    .loading-spinner {
+        animation: none !important;
+        transition: none !important;
+    }
+}
+
+/* 高对比度模式 */
+@media (prefers-contrast: high) {
+    .monster-card .card-front {
+        background: #000;
+        color: #fff;
+        border: 2px solid #fff;
+    }
+    
+    .monster-card .card-back {
+        background: #fff;
+        color: #000;
+        border: 2px solid #000;
+    }
+    
+    .option-btn {
+        background: #fff;
+        color: #000;
+        border: 2px solid #000;
+    }
+    
+    .difficulty-btn {
+        background: #000;
+        color: #fff;
+        border: 2px solid #fff;
+    }
+}

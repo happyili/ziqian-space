@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OpenRouter API 修复测试</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background: #f0f0f0; }
+        .test-btn { background: #007cba; color: white; border: none; padding: 15px 25px; margin: 10px; border-radius: 8px; cursor: pointer; font-size: 1rem; }
+        .test-btn:hover { background: #005a8b; }
+        .result { background: white; padding: 15px; margin: 10px 0; border-radius: 8px; border-left: 4px solid #007cba; }
+        .error { border-left-color: #e74c3c; background: #fdf2f2; color: #721c24; }
+        .success { border-left-color: #27ae60; background: #f2fdf2; color: #155724; }
+        .warning { border-left-color: #f39c12; background: #fef9e7; color: #856404; }
+        pre { background: #f8f9fa; padding: 10px; border-radius: 5px; overflow-x: auto; font-size: 0.9rem; white-space: pre-wrap; }
+        .status { font-weight: bold; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+    <h1>🔧 OpenRouter API 修复测试</h1>
+    
+    <div>
+        <button class="test-btn" onclick="testDirectAPICall()">直接测试API调用</button>
+        <button class="test-btn" onclick="testLLMIntegration()">测试LLM集成</button>
+        <button class="test-btn" onclick="clearResults()">清空结果</button>
+    </div>
+    
+    <div id="results"></div>
+    
+    <script>
+        const results = document.getElementById('results');
+        
+        function addResult(title, content, type = 'result') {
+            const div = document.createElement('div');
+            div.className = type;
+            div.innerHTML = `
+                <div class="status">${title}</div>
+                <pre>${content}</pre>
+            `;
+            results.appendChild(div);
+        }
+        
+        function clearResults() {
+            results.innerHTML = '';
+        }
+        
+        async function testDirectAPICall() {
+            addResult('🚀 直接测试OpenRouter API', '', 'result');
+            
+            const apiKey = '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';
+            const apiUrl = 'https://openrouter.ai/api/v1/chat/completions';
+            
+            try {
+                addResult('📡 发送请求到:', apiUrl, 'result');
+                
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${apiKey}`,
+                        'Content-Type': 'application/json',
+                        'HTTP-Referer': window.location.origin,
+                        'X-Title': 'Ultraman Logic Game',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        model: 'meta-llama/llama-3.1-8b-instruct:free',
+                        messages: [
+                            {
+                                role: 'system',
+                                content: '你是一位专业的儿童逻辑教育专家，擅长设计有趣的逻辑推理题目。'
+                            },
+                            {
+                                role: 'user',
+                                content: '请为10岁儿童设计一道简单难度的数字序列类型逻辑推理题，主题：奥特曼拯救地球'
+                            }
+                        ],
+                        max_tokens: 100,
+                        temperature: 0.8
+                    })
+                });
+                
+                addResult('📊 响应状态:', `HTTP ${response.status} ${response.statusText}`, 
+                    response.ok ? 'success' : 'error');
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    addResult('✅ API调用成功', JSON.stringify(data, null, 2), 'success');
+                } else {
+                    const errorText = await response.text();
+                    addResult('❌ API调用失败', `状态: ${response.status}\n响应: ${errorText}`, 'error');
+                }
+                
+            } catch (error) {
+                addResult('❌ 网络错误', error.message, 'error');
+            }
+        }
+        
+        async function testLLMIntegration() {
+            addResult('🔧 测试LLM集成模块', '', 'result');
+            
+            try {
+                // 动态加载脚本
+                await loadScript('config/gameConfig.js');
+                await loadScript('config/questionTemplates.js');
+                await loadScript('js/llmIntegration.js');
+                
+                const llm = new LLMIntegration();
+                
+                addResult('📋 LLM配置', `
+API URL: ${llm.apiUrl}
+模型: ${llm.model}
+最大Token: ${llm.maxTokens}
+温度: ${llm.temperature}
+                `, 'result');
+                
+                addResult('🔑 API密钥检查', llm.getAPIKey() ? '已配置' : '未配置', 
+                    llm.getAPIKey() ? 'success' : 'warning');
+                
+                // 测试生成题目
+                addResult('🎯 测试题目生成', '正在生成题目...', 'result');
+                
+                const question = await llm.generateQuestion('sequence', 'easy', '奥特曼拯救地球');
+                
+                if (question && question.story) {
+                    addResult('✅ 题目生成成功', `
+故事: ${question.story}
+题目: ${question.question}
+选项: ${question.options.join(', ')}
+正确答案: ${question.correctAnswer}
+提示: ${question.hint}
+                    `, 'success');
+                } else {
+                    addResult('⚠️ 题目生成部分成功', '收到响应但格式可能不完整', 'warning');
+                }
+                
+            } catch (error) {
+                addResult('❌ LLM集成测试失败', error.message, 'error');
+            }
+        }
+        
+        function loadScript(src) {
+            return new Promise((resolve, reject) => {
+                const script = document.createElement('script');
+                script.src = src;
+                script.onload = resolve;
+                script.onerror = reject;
+                document.head.appendChild(script);
+            });
+        }
+        
+        // 页面加载后自动运行测试
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                addResult('📄 自动测试', '页面加载完成，开始自动测试...', 'result');
+                testDirectAPICall();
+            }, 500);
+        });
+    </script>
+</body>
+</html>

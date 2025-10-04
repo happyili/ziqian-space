@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>简单调试 - 奥特曼逻辑推理游戏</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f0f0f0;
+        }
+        .log {
+            background: white;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 5px;
+            border-left: 4px solid #007cba;
+        }
+        .error { border-left-color: #e74c3c; background: #fdf2f2; }
+        .success { border-left-color: #27ae60; background: #f2fdf2; }
+        .warning { border-left-color: #f39c12; background: #fdf9f2; }
+        pre { background: #f8f8f8; padding: 10px; border-radius: 5px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <h1>🔍 简单调试 - 逐步检查</h1>
+    <div id="log"></div>
+    
+    <script>
+        const log = document.getElementById('log');
+        
+        function addLog(message, type = 'info') {
+            const div = document.createElement('div');
+            div.className = `log ${type}`;
+            div.innerHTML = `<strong>${new Date().toLocaleTimeString()}</strong>: ${message}`;
+            log.appendChild(div);
+            console.log(message);
+        }
+        
+        // 捕获所有错误
+        window.addEventListener('error', (e) => {
+            addLog(`❌ JavaScript错误: ${e.message}<br>文件: ${e.filename}<br>行号: ${e.lineno}<br>堆栈: <pre>${e.error ? e.error.stack : 'N/A'}</pre>`, 'error');
+        });
+        
+        window.addEventListener('unhandledrejection', (e) => {
+            addLog(`❌ Promise拒绝: ${e.reason}`, 'error');
+        });
+        
+        addLog('🚀 开始加载脚本...', 'info');
+    </script>
+    
+    <!-- 逐个加载脚本并检查 -->
+    <script>
+        addLog('📋 加载 gameConfig.js...', 'info');
+    </script>
+    <script src="config/gameConfig.js"></script>
+    <script>
+        if (typeof GameConfig !== 'undefined') {
+            addLog('✅ GameConfig 加载成功', 'success');
+        } else {
+            addLog('❌ GameConfig 加载失败', 'error');
+        }
+    </script>
+    
+    <script>
+        addLog('📋 加载 questionTemplates.js...', 'info');
+    </script>
+    <script src="config/questionTemplates.js"></script>
+    <script>
+        if (typeof QuestionTemplates !== 'undefined') {
+            addLog('✅ QuestionTemplates 加载成功', 'success');
+        } else {
+            addLog('❌ QuestionTemplates 加载失败', 'error');
+        }
+    </script>
+    
+    <script>
+        addLog('📋 加载 scoringSystem.js...', 'info');
+    </script>
+    <script src="js/scoringSystem.js"></script>
+    <script>
+        if (typeof ScoringSystem !== 'undefined') {
+            addLog('✅ ScoringSystem 加载成功', 'success');
+            try {
+                const test = new ScoringSystem();
+                addLog('✅ ScoringSystem 实例化成功', 'success');
+            } catch (error) {
+                addLog(`❌ ScoringSystem 实例化失败: ${error.message}`, 'error');
+            }
+        } else {
+            addLog('❌ ScoringSystem 加载失败', 'error');
+        }
+    </script>
+    
+    <script>
+        addLog('📋 加载 cardCollection.js...', 'info');
+    </script>
+    <script src="js/cardCollection.js"></script>
+    <script>
+        if (typeof CardCollection !== 'undefined') {
+            addLog('✅ CardCollection 加载成功', 'success');
+            try {
+                const test = new CardCollection();
+                addLog('✅ CardCollection 实例化成功', 'success');
+            } catch (error) {
+                addLog(`❌ CardCollection 实例化失败: ${error.message}`, 'error');
+            }
+        } else {
+            addLog('❌ CardCollection 加载失败', 'error');
+        }
+    </script>
+    
+    <script>
+        addLog('📋 加载 animationEngine.js...', 'info');
+    </script>
+    <script src="js/animationEngine.js"></script>
+    <script>
+        if (typeof AnimationEngine !== 'undefined') {
+            addLog('✅ AnimationEngine 加载成功', 'success');
+            try {
+                const test = new AnimationEngine();
+                addLog('✅ AnimationEngine 实例化成功', 'success');
+            } catch (error) {
+                addLog(`❌ AnimationEngine 实例化失败: ${error.message}`, 'error');
+            }
+        } else {
+            addLog('❌ AnimationEngine 加载失败', 'error');
+        }
+    </script>
+    
+    <script>
+        addLog('📋 加载 llmIntegration.js...', 'info');
+    </script>
+    <script src="js/llmIntegration.js"></script>
+    <script>
+        if (typeof LLMIntegration !== 'undefined') {
+            addLog('✅ LLMIntegration 加载成功', 'success');
+            try {
+                const test = new LLMIntegration();
+                addLog('✅ LLMIntegration 实例化成功', 'success');
+            } catch (error) {
+                addLog(`❌ LLMIntegration 实例化失败: ${error.message}`, 'error');
+            }
+        } else {
+            addLog('❌ LLMIntegration 加载失败', 'error');
+        }
+    </script>
+    
+    <script>
+        addLog('📋 加载 questionSystem.js...', 'info');
+    </script>
+    <script src="js/questionSystem.js"></script>
+    <script>
+        if (typeof QuestionSystem !== 'undefined') {
+            addLog('✅ QuestionSystem 加载成功', 'success');
+            try {
+                const test = new QuestionSystem();
+                addLog('✅ QuestionSystem 实例化成功', 'success');
+            } catch (error) {
+                addLog(`❌ QuestionSystem 实例化失败: ${error.message}`, 'error');
+            }
+        } else {
+            addLog('❌ QuestionSystem 加载失败', 'error');
+        }
+    </script>
+    
+    <script>
+        addLog('📋 加载 resultSummary.js...', 'info');
+    </script>
+    <script src="js/resultSummary.js"></script>
+    <script>
+        if (typeof ResultSummary !== 'undefined') {
+            addLog('✅ ResultSummary 加载成功', 'success');
+            try {
+                const test = new ResultSummary();
+                addLog('✅ ResultSummary 实例化成功', 'success');
+            } catch (error) {
+                addLog(`❌ ResultSummary 实例化失败: ${error.message}`, 'error');
+            }
+        } else {
+            addLog('❌ ResultSummary 加载失败', 'error');
+        }
+    </script>
+    
+    <script>
+        addLog('📋 加载 gameEngine.js...', 'info');
+    </script>
+    <script src="js/gameEngine.js"></script>
+    <script>
+        if (typeof GameEngine !== 'undefined') {
+            addLog('✅ GameEngine 加载成功', 'success');
+            try {
+                const test = new GameEngine();
+                addLog('✅ GameEngine 实例化成功', 'success');
+            } catch (error) {
+                addLog(`❌ GameEngine 实例化失败: ${error.message}<br>堆栈: <pre>${error.stack}</pre>`, 'error');
+            }
+        } else {
+            addLog('❌ GameEngine 加载失败', 'error');
+        }
+    </script>
+    
+    <script>
+        addLog('📋 加载 main.js...', 'info');
+    </script>
+    <script src="js/main.js"></script>
+    <script>
+        if (typeof UltramanLogicGame !== 'undefined') {
+            addLog('✅ UltramanLogicGame 加载成功', 'success');
+            try {
+                const test = new UltramanLogicGame();
+                addLog('✅ UltramanLogicGame 实例化成功', 'success');
+            } catch (error) {
+                addLog(`❌ UltramanLogicGame 实例化失败: ${error.message}<br>堆栈: <pre>${error.stack}</pre>`, 'error');
+            }
+        } else {
+            addLog('❌ UltramanLogicGame 加载失败', 'error');
+        }
+        
+        addLog('🎉 所有脚本加载完成！', 'success');
+    </script>
+</body>
+</html>

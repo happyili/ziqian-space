@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>修复测试 - 奥特曼逻辑推理游戏</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f0f0f0;
+        }
+        .test-button {
+            background: linear-gradient(145deg, #ff6b6b, #ee5a24);
+            border: none;
+            border-radius: 15px;
+            padding: 15px 30px;
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            margin: 10px;
+            transition: all 0.3s ease;
+        }
+        .test-button:hover {
+            transform: translateY(-3px);
+        }
+        .log {
+            background: white;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 5px;
+            border-left: 4px solid #007cba;
+        }
+        .error { border-left-color: #e74c3c; background: #fdf2f2; }
+        .success { border-left-color: #27ae60; background: #f2fdf2; }
+    </style>
+</head>
+<body>
+    <h1>🔧 修复测试</h1>
+    <div id="log"></div>
+    
+    <button class="test-button" onclick="testQuestionTemplates()">测试 QuestionTemplates</button>
+    <button class="test-button" onclick="testQuestionGeneration()">测试题目生成</button>
+    <button class="test-button" onclick="clearLog()">清空日志</button>
+    
+    <!-- 加载脚本 -->
+    <script src="config/gameConfig.js"></script>
+    <script src="config/questionTemplates.js"></script>
+    <script src="js/scoringSystem.js"></script>
+    <script src="js/cardCollection.js"></script>
+    <script src="js/animationEngine.js"></script>
+    <script src="js/llmIntegration.js"></script>
+    <script src="js/questionSystem.js"></script>
+    <script src="js/resultSummary.js"></script>
+    <script src="js/gameEngine.js"></script>
+    <script src="js/main.js"></script>
+    
+    <script>
+        const log = document.getElementById('log');
+        
+        function addLog(message, type = 'info') {
+            const div = document.createElement('div');
+            div.className = `log ${type}`;
+            div.innerHTML = `<strong>${new Date().toLocaleTimeString()}</strong>: ${message}`;
+            log.appendChild(div);
+            console.log(message);
+        }
+        
+        function clearLog() {
+            log.innerHTML = '';
+        }
+        
+        function testQuestionTemplates() {
+            addLog('🧪 测试 QuestionTemplates...', 'info');
+            
+            if (typeof QuestionTemplates !== 'undefined') {
+                addLog('✅ QuestionTemplates 已定义', 'success');
+                
+                // 测试 logicTypes
+                if (QuestionTemplates.logicTypes && Array.isArray(QuestionTemplates.logicTypes)) {
+                    addLog(`✅ logicTypes: ${QuestionTemplates.logicTypes.join(', ')}`, 'success');
+                } else {
+                    addLog('❌ logicTypes 未定义或不是数组', 'error');
+                }
+                
+                // 测试 storyThemes
+                if (QuestionTemplates.storyThemes && Array.isArray(QuestionTemplates.storyThemes)) {
+                    addLog(`✅ storyThemes: ${QuestionTemplates.storyThemes.join(', ')}`, 'success');
+                } else {
+                    addLog('❌ storyThemes 未定义或不是数组', 'error');
+                }
+                
+                // 测试 difficultyAdjustments
+                if (QuestionTemplates.difficultyAdjustments) {
+                    const difficulties = Object.keys(QuestionTemplates.difficultyAdjustments);
+                    addLog(`✅ difficultyAdjustments: ${difficulties.join(', ')}`, 'success');
+                    
+                    // 测试每个难度
+                    ['easy', 'medium', 'hard'].forEach(diff => {
+                        if (QuestionTemplates.difficultyAdjustments[diff]) {
+                            addLog(`✅ ${diff} 配置存在`, 'success');
+                        } else {
+                            addLog(`❌ ${diff} 配置缺失`, 'error');
+                        }
+                    });
+                } else {
+                    addLog('❌ difficultyAdjustments 未定义', 'error');
+                }
+                
+                // 测试 hintTemplates
+                if (QuestionTemplates.hintTemplates) {
+                    const hintTypes = Object.keys(QuestionTemplates.hintTemplates);
+                    addLog(`✅ hintTemplates: ${hintTypes.join(', ')}`, 'success');
+                } else {
+                    addLog('❌ hintTemplates 未定义', 'error');
+                }
+            } else {
+                addLog('❌ QuestionTemplates 未定义', 'error');
+            }
+        }
+        
+        function testQuestionGeneration() {
+            addLog('🧪 测试题目生成...', 'info');
+            
+            try {
+                const questionSystem = new QuestionSystem();
+                addLog('✅ QuestionSystem 实例创建成功', 'success');
+                
+                // 测试 selectQuestionType
+                const questionType = questionSystem.selectQuestionType('easy', 1);
+                addLog(`✅ selectQuestionType 成功: ${questionType}`, 'success');
+                
+                // 测试 selectTheme
+                const theme = questionSystem.selectTheme();
+                addLog(`✅ selectTheme 成功: ${theme}`, 'success');
+                
+            } catch (error) {
+                addLog(`❌ 题目生成测试失败: ${error.message}`, 'error');
+                console.error(error);
+            }
+        }
+        
+        // 页面加载完成后自动测试
+        document.addEventListener('DOMContentLoaded', () => {
+            addLog('📄 页面加载完成', 'success');
+            setTimeout(() => {
+                testQuestionTemplates();
+                testQuestionGeneration();
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

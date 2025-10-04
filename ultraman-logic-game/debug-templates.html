@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>调试 QuestionTemplates</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background: #f0f0f0; }
+        .debug-info { background: white; padding: 15px; margin: 10px 0; border-radius: 5px; border-left: 4px solid #007cba; }
+        .error { border-left-color: #e74c3c; background: #fdf2f2; }
+        .success { border-left-color: #27ae60; background: #f2fdf2; }
+        .warning { border-left-color: #f39c12; background: #fef9e7; }
+        pre { background: #f8f9fa; padding: 10px; border-radius: 3px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <h1>🔍 QuestionTemplates 调试</h1>
+    <div id="debug-output"></div>
+    
+    <!-- 只加载必要的配置文件 -->
+    <script src="config/questionTemplates.js"></script>
+    
+    <script>
+        const output = document.getElementById('debug-output');
+        
+        function addDebugInfo(title, content, type = 'debug-info') {
+            const div = document.createElement('div');
+            div.className = type;
+            div.innerHTML = `<h3>${title}</h3><pre>${content}</pre>`;
+            output.appendChild(div);
+        }
+        
+        function debugQuestionTemplates() {
+            // 检查 QuestionTemplates 是否定义
+            if (typeof QuestionTemplates === 'undefined') {
+                addDebugInfo('❌ 错误', 'QuestionTemplates 未定义', 'error');
+                return;
+            }
+            
+            addDebugInfo('✅ 成功', 'QuestionTemplates 已定义', 'success');
+            
+            // 检查所有属性
+            const properties = [
+                'logicTypes',
+                'storyThemes', 
+                'difficultyKeywords',
+                'hintTemplates',
+                'baseTemplates',
+                'storyTemplates',
+                'difficultyAdjustments',
+                'llmPrompts'
+            ];
+            
+            properties.forEach(prop => {
+                if (QuestionTemplates.hasOwnProperty(prop)) {
+                    const value = QuestionTemplates[prop];
+                    if (Array.isArray(value)) {
+                        addDebugInfo(`✅ ${prop}`, `数组，长度: ${value.length}\n内容: ${JSON.stringify(value, null, 2)}`, 'success');
+                    } else if (typeof value === 'object') {
+                        addDebugInfo(`✅ ${prop}`, `对象，键: ${Object.keys(value).join(', ')}\n内容: ${JSON.stringify(value, null, 2)}`, 'success');
+                    } else {
+                        addDebugInfo(`✅ ${prop}`, `类型: ${typeof value}\n值: ${value}`, 'success');
+                    }
+                } else {
+                    addDebugInfo(`❌ ${prop}`, '属性不存在', 'error');
+                }
+            });
+            
+            // 特别检查 difficultyAdjustments
+            if (QuestionTemplates.difficultyAdjustments) {
+                const difficulties = ['easy', 'medium', 'hard'];
+                difficulties.forEach(diff => {
+                    if (QuestionTemplates.difficultyAdjustments[diff]) {
+                        addDebugInfo(`✅ difficultyAdjustments.${diff}`, JSON.stringify(QuestionTemplates.difficultyAdjustments[diff], null, 2), 'success');
+                    } else {
+                        addDebugInfo(`❌ difficultyAdjustments.${diff}`, '配置不存在', 'error');
+                    }
+                });
+            }
+            
+            // 测试访问
+            try {
+                const testAccess = QuestionTemplates.difficultyAdjustments['easy'];
+                addDebugInfo('✅ 访问测试', `QuestionTemplates.difficultyAdjustments['easy'] = ${JSON.stringify(testAccess, null, 2)}`, 'success');
+            } catch (error) {
+                addDebugInfo('❌ 访问测试', `访问 QuestionTemplates.difficultyAdjustments['easy'] 失败: ${error.message}`, 'error');
+            }
+        }
+        
+        // 页面加载完成后执行调试
+        document.addEventListener('DOMContentLoaded', () => {
+            addDebugInfo('📄 状态', '页面加载完成，开始调试...', 'debug-info');
+            setTimeout(debugQuestionTemplates, 100);
+        });
+        
+        // 也在脚本加载后立即执行
+        setTimeout(() => {
+            addDebugInfo('⏰ 延迟调试', '1秒后的调试结果：', 'warning');
+            debugQuestionTemplates();
+        }, 1000);
+    </script>
+</body>
+</html>

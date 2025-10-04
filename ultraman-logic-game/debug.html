@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>奥特曼逻辑推理游戏 - 调试版本</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f0f0f0;
+        }
+        .debug-info {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 10px 0;
+            border-left: 4px solid #007cba;
+        }
+        .error {
+            border-left-color: #e74c3c;
+            background: #fdf2f2;
+        }
+        .success {
+            border-left-color: #27ae60;
+            background: #f2fdf2;
+        }
+        .warning {
+            border-left-color: #f39c12;
+            background: #fdf9f2;
+        }
+        pre {
+            background: #f8f8f8;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>🦸‍♂️ 奥特曼逻辑推理游戏 - 调试版本</h1>
+    
+    <div id="debug-log"></div>
+    
+    <button onclick="testGameInitialization()">测试游戏初始化</button>
+    <button onclick="clearLog()">清空日志</button>
+    
+    <!-- JavaScript 模块 -->
+    <script src="config/gameConfig.js"></script>
+    <script src="config/questionTemplates.js"></script>
+    <script src="js/scoringSystem.js"></script>
+    <script src="js/cardCollection.js"></script>
+    <script src="js/animationEngine.js"></script>
+    <script src="js/llmIntegration.js"></script>
+    <script src="js/questionSystem.js"></script>
+    <script src="js/resultSummary.js"></script>
+    <script src="js/gameEngine.js"></script>
+    <script src="js/main.js"></script>
+    
+    <script>
+        const debugLog = document.getElementById('debug-log');
+        
+        function log(message, type = 'info') {
+            const div = document.createElement('div');
+            div.className = `debug-info ${type}`;
+            div.innerHTML = `<strong>${new Date().toLocaleTimeString()}</strong>: ${message}`;
+            debugLog.appendChild(div);
+            console.log(message);
+        }
+        
+        function clearLog() {
+            debugLog.innerHTML = '';
+        }
+        
+        // 捕获所有错误
+        window.addEventListener('error', (e) => {
+            log(`❌ JavaScript错误: ${e.message}<br>文件: ${e.filename}<br>行号: ${e.lineno}`, 'error');
+        });
+        
+        window.addEventListener('unhandledrejection', (e) => {
+            log(`❌ Promise拒绝: ${e.reason}`, 'error');
+        });
+        
+        function testGameInitialization() {
+            log('🚀 开始测试游戏初始化...', 'info');
+            
+            try {
+                // 测试配置加载
+                log('📋 测试GameConfig...', 'info');
+                if (typeof GameConfig !== 'undefined') {
+                    log(`✅ GameConfig加载成功: ${JSON.stringify(Object.keys(GameConfig))}`, 'success');
+                } else {
+                    log('❌ GameConfig未定义', 'error');
+                    return;
+                }
+                
+                // 测试题目模板
+                log('📋 测试QuestionTemplates...', 'info');
+                if (typeof QuestionTemplates !== 'undefined') {
+                    log(`✅ QuestionTemplates加载成功: ${JSON.stringify(Object.keys(QuestionTemplates))}`, 'success');
+                } else {
+                    log('❌ QuestionTemplates未定义', 'error');
+                    return;
+                }
+                
+                // 测试各个类
+                const classes = ['ScoringSystem', 'CardCollection', 'AnimationEngine', 'LLMIntegration', 'QuestionSystem', 'ResultSummary', 'GameEngine', 'UltramanLogicGame'];
+                
+                for (const className of classes) {
+                    log(`🔍 测试${className}类...`, 'info');
+                    if (typeof window[className] !== 'undefined') {
+                        try {
+                            if (className === 'UltramanLogicGame') {
+                                // 不实际创建UltramanLogicGame实例，只检查类是否存在
+                                log(`✅ ${className}类定义正确`, 'success');
+                            } else {
+                                const instance = new window[className]();
+                                log(`✅ ${className}实例创建成功`, 'success');
+                            }
+                        } catch (error) {
+                            log(`❌ ${className}实例创建失败: ${error.message}`, 'error');
+                        }
+                    } else {
+                        log(`❌ ${className}类未定义`, 'error');
+                    }
+                }
+                
+                // 测试完整的游戏初始化
+                log('🎮 测试完整游戏初始化...', 'info');
+                try {
+                    const game = new UltramanLogicGame();
+                    log('✅ 游戏初始化成功！', 'success');
+                } catch (error) {
+                    log(`❌ 游戏初始化失败: ${error.message}<br>堆栈: <pre>${error.stack}</pre>`, 'error');
+                }
+                
+            } catch (error) {
+                log(`❌ 测试过程中发生错误: ${error.message}`, 'error');
+            }
+        }
+        
+        // 页面加载完成后自动测试
+        document.addEventListener('DOMContentLoaded', () => {
+            log('📄 页面加载完成', 'success');
+            setTimeout(testGameInitialization, 1000);
+        });
+    </script>
+</body>
+</html>
